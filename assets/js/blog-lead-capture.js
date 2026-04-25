@@ -3,13 +3,9 @@
    File: assets/js/blog-lead-capture.js
    Include AFTER main.js on all blog article pages.
 
-   Renders 2 lead capture surfaces:
-   1. Fixed sidebar (desktop: always visible with good margin;
-                     mobile: shows after 40% scroll with close button)
-   2. Exit-intent popup (mouse leaves viewport upward on desktop;
-                         30s timer fallback on mobile)
-
-   All surfaces submit to the same Google Forms endpoint as homepage.
+   Renders 1 lead capture surface:
+   Fixed sidebar (desktop: always visible; mobile: shows after 40% scroll with close button)
+   Submits to the same Google Forms endpoint as homepage.
    ============================================================ */
 
 (function () {
@@ -29,8 +25,8 @@
   };
 
   /* ── SHARED FORM FIELDS HTML ── */
-  function formFieldsHTML(prefix, includeSituation) {
-    var html = '<div class="lcf-row">' +
+  function formFieldsHTML(prefix) {
+    return '<div class="lcf-row">' +
       '<div class="lcf-fg"><label>First Name</label><input id="' + prefix + '_fname" type="text" placeholder="Rahul" autocomplete="given-name"></div>' +
       '<div class="lcf-fg"><label>Last Name</label><input id="' + prefix + '_lname" type="text" placeholder="Kumar" autocomplete="family-name"></div>' +
     '</div>' +
@@ -54,23 +50,6 @@
         '<option>Other</option>' +
       '</select>' +
     '</div>';
-    
-    // Include "My Current Situation" only if explicitly requested (for exit popup)
-    if (includeSituation) {
-      html += '<div class="lcf-fg">' +
-        '<label>My Current Situation</label>' +
-        '<select id="' + prefix + '_situation">' +
-          '<option value="">Select the scenario that fits you best</option>' +
-          '<option>I am a fresher with no work experience and struggling to get my first job interview</option>' +
-          '<option>I have been applying to 50+ jobs for months but getting zero interview calls</option>' +
-          '<option>I am currently employed but want to switch to a better role or higher pay</option>' +
-          '<option>I want to change my career domain completely and do not know how to reposition myself</option>' +
-          '<option>I have an overseas job opportunity and need help with the process and visa filing</option>' +
-        '</select>' +
-      '</div>';
-    }
-    
-    return html;
   }
 
   /* ── SUBMIT HANDLER ── */
@@ -86,9 +65,8 @@
       return;
     }
 
-    var origText     = btn.textContent;
-    btn.textContent  = 'Submitting…';
-    btn.disabled     = true;
+    btn.textContent = 'Submitting…';
+    btn.disabled    = true;
 
     var params = new URLSearchParams();
     params.set(ENTRY.fname,     (document.getElementById(prefix + '_fname')     || {}).value || '');
@@ -96,7 +74,7 @@
     params.set(ENTRY.phone,     phone);
     params.set(ENTRY.email,     (document.getElementById(prefix + '_email')     || {}).value || '');
     params.set(ENTRY.profile,   (document.getElementById(prefix + '_profile')   || {}).value || '');
-    params.set(ENTRY.situation, (document.getElementById(prefix + '_situation') || {}).value || '');
+    params.set(ENTRY.situation, '');
 
     fetch(FORM_URL, {
       method : 'POST',
@@ -107,7 +85,6 @@
       btn.textContent      = '✓ Submitted! We\'ll call you within a few hours.';
       btn.style.background = '#0DBD6E';
       btn.disabled         = false;
-      // Mark as submitted so other surfaces know
       try { sessionStorage.setItem('lc_submitted', '1'); } catch(e) {}
     });
   }
@@ -121,24 +98,9 @@
   function injectStyles() {
     var style = document.createElement('style');
     style.textContent = `
-      /* ── SHARED FORM STYLES ── */
-      .lcf-row { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 12px;
-      }
-      .lcf-fg { 
-        display: flex; 
-        flex-direction: column; 
-        gap: 6px; 
-        margin-bottom: 12px;
-      }
-      .lcf-fg label { 
-        font-size: .72rem; 
-        font-weight: 600; 
-        color: rgba(255,255,255,.6); 
-        letter-spacing: .3px; 
-      }
+      .lcf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .lcf-fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+      .lcf-fg label { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.6); letter-spacing: .3px; }
       .lcf-fg input, .lcf-fg select {
         padding: 12px 14px;
         border: 1.5px solid rgba(255,255,255,.15);
@@ -176,7 +138,7 @@
       }
       .lcf-btn:hover { opacity: .9; transform: translateY(-1px); }
 
-      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, STATIC ON DESKTOP) ── */
+      /* ── FIXED SIDEBAR ── */
       #lc-sidebar {
         position: fixed;
         top: 100px;
@@ -192,20 +154,13 @@
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
+        opacity: 0;
+        pointer-events: none;
         transition: opacity .3s ease-in-out;
-        opacity: 1;
-        pointer-events: all;
-        display: block !important;
       }
       #lc-sidebar.lc-visible {
         opacity: 1;
         pointer-events: all;
-        display: block !important;
-      }
-      #lc-sidebar.lc-hidden { 
-        opacity: 0;
-        pointer-events: none;
-        display: block !important;
       }
       .lc-sidebar-head { margin-bottom: 14px; }
       .lc-sidebar-head h4 {
@@ -228,205 +183,18 @@
         padding: 2px 6px;
         border-radius: 4px;
         transition: color .2s;
+        display: none;
       }
       .lc-close:hover { color: white; }
 
-
-      #lc-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.6);
-        z-index: 200;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .3s;
-        backdrop-filter: blur(4px);
-      }
-      #lc-overlay.lc-show {
-        opacity: 1;
-        pointer-events: all;
-      }
-      #lc-popup {
-        background: linear-gradient(135deg, #1f0f00 0%, #2d1500 100%);
-        border: 1px solid rgba(255, 140, 60, .35);
-        border-radius: 20px;
-        padding: 0;
-        max-width: 900px;
-        width: 100%;
-        position: relative;
-        max-height: 90vh;
-        overflow: hidden;
-        transform: scale(.95);
-        transition: transform .3s;
-        box-shadow: 0 24px 80px rgba(255, 120, 40, .4);
-        display: flex;
-      }
-      #lc-overlay.lc-show #lc-popup { transform: scale(1); }
-      
-      .lc-popup-container {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        max-height: 600px;
-      }
-      
-      .lc-popup-left {
-        flex: 0 0 45%;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border-right: 1px solid rgba(255, 140, 60, .2);
-      }
-      
-      .lc-popup-right {
-        flex: 1;
-        padding: 28px;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-      }
-      
-      .lc-popup-head { margin-bottom: 18px; }
-      .lc-popup-head .lc-eyebrow {
-        font-size: .65rem; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .6px;
-        color: #FFB366; margin-bottom: 6px;
-      }
-      .lc-popup-head h3 {
-        font-family: 'Sora', sans-serif;
-        font-size: 1.05rem; font-weight: 800;
-        color: white; line-height: 1.25; margin-bottom: 6px;
-      }
-      .lc-popup-head p { font-size: .78rem; color: rgba(255,255,255,.6); line-height: 1.45; }
-
-      /* ── EXIT POPUP FORM FIELDS (Orange Accent) ── */
-      #lc-popup .lcf-fg label {
-        color: rgba(255, 200, 150, .8);
-      }
-      #lc-popup .lcf-fg input, 
-      #lc-popup .lcf-fg select {
-        border-color: rgba(255, 140, 60, .25);
-        background: rgba(255, 140, 60, .05);
-      }
-      #lc-popup .lcf-fg input::placeholder {
-        color: rgba(255, 140, 60, .4);
-      }
-      #lc-popup .lcf-fg input:focus,
-      #lc-popup .lcf-fg select:focus {
-        border-color: #FF8C3C;
-        background: rgba(255, 140, 60, .15);
-      }
-      #lc-popup .lcf-btn {
-        background: linear-gradient(135deg, #FF8C3C, #FF6B20);
-        box-shadow: 0 8px 24px rgba(255, 107, 32, .4);
-      }
-      #lc-popup .lcf-btn:hover {
-        opacity: .95;
-      }
-
-      /* ── SUCCESS STORIES CAROUSEL ── */
-      .lc-success-stories {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-      }
-      .lc-stories-carousel {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        border-radius: 12px;
-        overflow: hidden;
-        background: rgba(0,0,0,.3);
-      }
-      .lc-story-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-        transition: opacity .4s ease-in-out;
-      }
-      .lc-story-img.lc-story-active {
-        opacity: 1;
-      }
-      .lc-stories-nav {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-      }
-      .lc-stories-btn {
-        background: rgba(255, 140, 60, .2);
-        color: #FFB366;
-        border: 1px solid rgba(255, 140, 60, .3);
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all .2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      .lc-stories-btn:hover {
-        background: rgba(255, 140, 60, .4);
-        border-color: rgba(255, 140, 60, .6);
-      }
-      .lc-stories-dots {
-        display: flex;
-        gap: 6px;
-        flex: 1;
-        justify-content: center;
-      }
-      .lc-stories-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: rgba(255, 140, 60, .3);
-        cursor: pointer;
-        transition: all .2s;
-      }
-      .lc-stories-dot.lc-dot-active {
-        background: #FFB366;
-        width: 20px;
-        border-radius: 3px;
-      }
-      .lc-stories-text {
-        text-align: center;
-        font-size: .75rem;
-        color: rgba(255, 200, 150, .7);
-        line-height: 1.4;
-      }
-
-      /* ── RESPONSIVE ── */
+      /* Desktop: always visible, no close */
       @media (min-width: 900px) {
-        #lc-sidebar { 
-          display: block !important;
-          right: 40px;
-          width: 320px;
-        }
+        #lc-sidebar { right: 40px; width: 320px; }
         #lc-sidebar .lc-close { display: none !important; }
       }
+      /* Mobile: close button shown */
       @media (max-width: 899px) {
-        #lc-sidebar { 
-          position: fixed;
-          bottom: auto;
-          top: auto;
-          right: 20px;
-          width: 90vw;
-          max-width: 340px;
-        }
+        #lc-sidebar { right: 20px; width: 90vw; max-width: 340px; }
         #lc-sidebar .lc-close { display: block !important; }
         .lcf-row { grid-template-columns: 1fr; }
       }
@@ -434,217 +202,61 @@
     document.head.appendChild(style);
   }
 
-  /* ══════════════════════════════════════════
-     1. FIXED SIDEBAR (TOP-RIGHT, ONLY ON BLOG CONTENT)
-  ══════════════════════════════════════════ */
+  /* ── BUILD SIDEBAR ── */
   function buildSidebar() {
-    console.log('[LC] Building sidebar...');
-    
     var sidebar = document.createElement('div');
     sidebar.id  = 'lc-sidebar';
     sidebar.innerHTML =
-      '<button class="lc-close" id="lc-sidebar-close" aria-label="Close" style="display:none;">×</button>' +
+      '<button class="lc-close" id="lc-sidebar-close" aria-label="Close sidebar">×</button>' +
       '<div class="lc-sidebar-head">' +
         '<h4>🎯 Get Interview Calls Faster</h4>' +
         '<p>Free 30-min call. We\'ll diagnose your job search and tell you exactly what to fix.</p>' +
       '</div>' +
-      formFieldsHTML('sb', false) +
+      formFieldsHTML('sb') +
       '<button class="lcf-btn" onclick="lcSubmit(\'sb\', this)">Get My Free Call →</button>';
 
     document.body.appendChild(sidebar);
-    console.log('[LC] Sidebar created and appended to body', sidebar);
 
     var closeBtn = document.getElementById('lc-sidebar-close');
 
-    // Desktop: always visible, no close button
-    // Mobile: show after 40% scroll, with close button
-    function updateSidebarVisibility() {
+    function updateVisibility() {
       if (alreadySubmitted()) {
         sidebar.classList.remove('lc-visible');
         return;
       }
 
-      var isDesktop = window.innerWidth >= 900;
-      var scrollY = window.scrollY;
-      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      var scrollPercent = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+      var isDesktop     = window.innerWidth >= 900;
+      var scrollPercent = (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)) * 100;
 
       if (isDesktop) {
-        // Desktop: always show sidebar, no close button
         sidebar.classList.add('lc-visible');
-        closeBtn.style.display = 'none';
       } else {
-        // Mobile: show after 40% scroll, with close button
-        if (scrollPercent >= 40 && !sidebar.classList.contains('lc-hidden')) {
+        if (scrollPercent >= 40 && !sidebar.dataset.closed) {
           sidebar.classList.add('lc-visible');
-          closeBtn.style.display = 'block';
-        } else if (scrollPercent < 40 || sidebar.classList.contains('lc-hidden')) {
-          sidebar.classList.remove('lc-visible');
         }
       }
     }
 
-    // Close button (mobile only)
     closeBtn.addEventListener('click', function () {
-      sidebar.classList.add('lc-hidden');
+      sidebar.classList.remove('lc-visible');
+      sidebar.dataset.closed = '1';
     });
 
-    // Initial check
-    setTimeout(updateSidebarVisibility, 200);
-
-    // Monitor scroll and resize
-    window.addEventListener('scroll', updateSidebarVisibility, { passive: true });
-    window.addEventListener('resize', updateSidebarVisibility, { passive: true });
+    setTimeout(updateVisibility, 200);
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('resize', updateVisibility, { passive: true });
   }
 
-  /* ══════════════════════════════════════════
-     2. EXIT-INTENT POPUP
-  ══════════════════════════════════════════ */
-  function buildExitPopup() {
-    var overlay = document.createElement('div');
-    overlay.id  = 'lc-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'Get a free discovery call');
-
-    var popup = document.createElement('div');
-    popup.id   = 'lc-popup';
-    popup.innerHTML =
-      '<button class="lc-close" id="lc-popup-close" aria-label="Close">×</button>' +
-      '<div class="lc-popup-container">' +
-        '<div class="lc-popup-left">' +
-          '<div class="lc-success-stories">' +
-            '<div class="lc-stories-carousel" id="lc-stories-carousel">' +
-              '<img src="/assets/images/success-stories/story-1.jpg" alt="Success Story 1" class="lc-story-img lc-story-active">' +
-              '<img src="/assets/images/success-stories/story-2.jpg" alt="Success Story 2" class="lc-story-img">' +
-              '<img src="/assets/images/success-stories/story-3.jpg" alt="Success Story 3" class="lc-story-img">' +
-              '<img src="/assets/images/success-stories/story-4.jpg" alt="Success Story 4" class="lc-story-img">' +
-              '<img src="/assets/images/success-stories/story-5.jpg" alt="Success Story 5" class="lc-story-img">' +
-              '<img src="/assets/images/success-stories/story-6.jpg" alt="Success Story 6" class="lc-story-img">' +
-            '</div>' +
-            '<div class="lc-stories-nav">' +
-              '<button class="lc-stories-btn lc-stories-prev" id="lc-stories-prev">❮</button>' +
-              '<div class="lc-stories-dots" id="lc-stories-dots"></div>' +
-              '<button class="lc-stories-btn lc-stories-next" id="lc-stories-next">❯</button>' +
-            '</div>' +
-            '<p class="lc-stories-text">Join 1000+ candidates who landed their dream jobs. Your story could be next!</p>' +
-          '</div>' +
-        '</div>' +
-        '<div class="lc-popup-right">' +
-          '<div class="lc-popup-head">' +
-            '<div class="lc-eyebrow">Wait — Before You Go</div>' +
-            '<h3>Still Struggling to Get<br>Interview Calls?</h3>' +
-            '<p>Book a free 30-min call. We\'ll diagnose your specific blockers and tell you exactly what to fix. Honest. No pressure.</p>' +
-          '</div>' +
-          '<form onsubmit="return false;">' +
-            formFieldsHTML('ep', true) +
-            '<button class="lcf-btn" onclick="lcSubmit(\'ep\', this)">Get My Free Discovery Call →</button>' +
-          '</form>' +
-        '</div>' +
-      '</div>';
-
-    overlay.appendChild(popup);
-    document.body.appendChild(overlay);
-
-    // Success Stories Carousel Logic
-    var storyImages = document.querySelectorAll('.lc-story-img');
-    var currentStoryIndex = 0;
-    var totalStories = storyImages.length;
-
-    // Create dots
-    var dotsContainer = document.getElementById('lc-stories-dots');
-    for (var i = 0; i < totalStories; i++) {
-      var dot = document.createElement('span');
-      dot.className = 'lc-stories-dot' + (i === 0 ? ' lc-dot-active' : '');
-      dot.addEventListener('click', function(idx) {
-        return function() { goToStory(idx); };
-      }(i));
-      dotsContainer.appendChild(dot);
-    }
-
-    function showStory(index) {
-      storyImages.forEach(function(img) { img.classList.remove('lc-story-active'); });
-      document.querySelectorAll('.lc-stories-dot').forEach(function(dot) { dot.classList.remove('lc-dot-active'); });
-      
-      storyImages[index].classList.add('lc-story-active');
-      document.querySelectorAll('.lc-stories-dot')[index].classList.add('lc-dot-active');
-    }
-
-    function goToStory(index) {
-      currentStoryIndex = index;
-      showStory(currentStoryIndex);
-    }
-
-    function nextStory() {
-      currentStoryIndex = (currentStoryIndex + 1) % totalStories;
-      showStory(currentStoryIndex);
-    }
-
-    function prevStory() {
-      currentStoryIndex = (currentStoryIndex - 1 + totalStories) % totalStories;
-      showStory(currentStoryIndex);
-    }
-
-    document.getElementById('lc-stories-next').addEventListener('click', nextStory);
-    document.getElementById('lc-stories-prev').addEventListener('click', prevStory);
-
-    function showPopup() {
-      if (alreadySubmitted()) return;
-      overlay.classList.add('lc-show');
-    }
-
-    function hidePopup() {
-      overlay.classList.remove('lc-show');
-    }
-
-    // Desktop: mouse exits viewport upward
-    document.addEventListener('mouseleave', function (e) {
-      if (e.clientY < 20) {
-        showPopup();
-      }
-    });
-
-    // Mobile fallback: show after 30 seconds of reading
-    var mobileTimer = setTimeout(function () {
-      if (window.innerWidth < 900 && !alreadySubmitted()) {
-        showPopup();
-      }
-    }, 30000);
-
-    // Close: button, overlay click, Escape key
-    document.getElementById('lc-popup-close').addEventListener('click', hidePopup);
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) hidePopup();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') hidePopup();
-    });
-  }
-
-  /* ── GLOBAL SUBMIT HANDLER (called from inline onclick) ── */
+  /* ── GLOBAL SUBMIT HANDLER ── */
   window.lcSubmit = function (prefix, btn) {
     handleLCSubmit(prefix, btn);
   };
 
   /* ── INIT ── */
   function init() {
-    console.log('[LC] Initializing lead capture system...');
-    
-    if (alreadySubmitted()) {
-      console.log('[LC] User already submitted, skipping');
-      return;
-    }
-
+    if (alreadySubmitted()) return;
     injectStyles();
-    console.log('[LC] Styles injected');
-    
     buildSidebar();
-    console.log('[LC] Sidebar built');
-    
-    buildExitPopup();
-    console.log('[LC] Exit popup built');
-    
-    console.log('[LC] Lead capture system ready!');
   }
 
   if (document.readyState === 'loading') {
