@@ -254,29 +254,56 @@
         background: linear-gradient(135deg, #1f0f00 0%, #2d1500 100%);
         border: 1px solid rgba(255, 140, 60, .35);
         border-radius: 20px;
-        padding: 32px 28px;
-        max-width: 580px;
+        padding: 0;
+        max-width: 900px;
         width: 100%;
         position: relative;
         max-height: 90vh;
-        overflow-y: auto;
+        overflow: hidden;
         transform: scale(.95);
         transition: transform .3s;
         box-shadow: 0 24px 80px rgba(255, 120, 40, .4);
+        display: flex;
       }
       #lc-overlay.lc-show #lc-popup { transform: scale(1); }
-      .lc-popup-head { margin-bottom: 20px; }
+      
+      .lc-popup-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        max-height: 600px;
+      }
+      
+      .lc-popup-left {
+        flex: 0 0 45%;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-right: 1px solid rgba(255, 140, 60, .2);
+      }
+      
+      .lc-popup-right {
+        flex: 1;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      
+      .lc-popup-head { margin-bottom: 18px; }
       .lc-popup-head .lc-eyebrow {
-        font-size: .68rem; font-weight: 700;
+        font-size: .65rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: .6px;
-        color: #FFB366; margin-bottom: 8px;
+        color: #FFB366; margin-bottom: 6px;
       }
       .lc-popup-head h3 {
         font-family: 'Sora', sans-serif;
-        font-size: 1.15rem; font-weight: 800;
+        font-size: 1.05rem; font-weight: 800;
         color: white; line-height: 1.25; margin-bottom: 6px;
       }
-      .lc-popup-head p { font-size: .82rem; color: rgba(255,255,255,.6); line-height: 1.55; }
+      .lc-popup-head p { font-size: .78rem; color: rgba(255,255,255,.6); line-height: 1.45; }
 
       /* ── EXIT POPUP FORM FIELDS (Orange Accent) ── */
       #lc-popup .lcf-fg label {
@@ -305,16 +332,19 @@
 
       /* ── SUCCESS STORIES CAROUSEL ── */
       .lc-success-stories {
-        margin-bottom: 24px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
       }
       .lc-stories-carousel {
         position: relative;
         width: 100%;
-        height: 300px;
-        border-radius: 16px;
+        aspect-ratio: 1 / 1;
+        border-radius: 12px;
         overflow: hidden;
-        background: rgba(0,0,0,.2);
-        margin-bottom: 16px;
+        background: rgba(0,0,0,.3);
       }
       .lc-story-img {
         position: absolute;
@@ -331,22 +361,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        margin-bottom: 14px;
+        gap: 10px;
+        width: 100%;
       }
       .lc-stories-btn {
         background: rgba(255, 140, 60, .2);
         color: #FFB366;
         border: 1px solid rgba(255, 140, 60, .3);
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         cursor: pointer;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         transition: all .2s;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
       }
       .lc-stories-btn:hover {
         background: rgba(255, 140, 60, .4);
@@ -354,13 +385,13 @@
       }
       .lc-stories-dots {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         flex: 1;
         justify-content: center;
       }
       .lc-stories-dot {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         background: rgba(255, 140, 60, .3);
         cursor: pointer;
@@ -368,14 +399,14 @@
       }
       .lc-stories-dot.lc-dot-active {
         background: #FFB366;
-        width: 24px;
-        border-radius: 4px;
+        width: 20px;
+        border-radius: 3px;
       }
       .lc-stories-text {
         text-align: center;
-        font-size: .82rem;
+        font-size: .75rem;
         color: rgba(255, 200, 150, .7);
-        line-height: 1.5;
+        line-height: 1.4;
       }
 
       /* ── RESPONSIVE ── */
@@ -480,29 +511,37 @@
     popup.id   = 'lc-popup';
     popup.innerHTML =
       '<button class="lc-close" id="lc-popup-close" aria-label="Close">×</button>' +
-      '<div class="lc-popup-head">' +
-        '<div class="lc-eyebrow">Wait — Before You Go</div>' +
-        '<h3>Still Struggling to Get<br>Interview Calls?</h3>' +
-        '<p>Book a free 30-min call. We\'ll diagnose your specific blockers and tell you exactly what to fix. Honest. No pressure.</p>' +
-      '</div>' +
-      '<div class="lc-success-stories">' +
-        '<div class="lc-stories-carousel" id="lc-stories-carousel">' +
-          '<img src="/assets/images/success-stories/story-1.jpg" alt="Success Story 1" class="lc-story-img lc-story-active">' +
-          '<img src="/assets/images/success-stories/story-2.jpg" alt="Success Story 2" class="lc-story-img">' +
-          '<img src="/assets/images/success-stories/story-3.jpg" alt="Success Story 3" class="lc-story-img">' +
-          '<img src="/assets/images/success-stories/story-4.jpg" alt="Success Story 4" class="lc-story-img">' +
-          '<img src="/assets/images/success-stories/story-5.jpg" alt="Success Story 5" class="lc-story-img">' +
-          '<img src="/assets/images/success-stories/story-6.jpg" alt="Success Story 6" class="lc-story-img">' +
+      '<div class="lc-popup-container">' +
+        '<div class="lc-popup-left">' +
+          '<div class="lc-success-stories">' +
+            '<div class="lc-stories-carousel" id="lc-stories-carousel">' +
+              '<img src="/assets/images/success-stories/story-1.jpg" alt="Success Story 1" class="lc-story-img lc-story-active">' +
+              '<img src="/assets/images/success-stories/story-2.jpg" alt="Success Story 2" class="lc-story-img">' +
+              '<img src="/assets/images/success-stories/story-3.jpg" alt="Success Story 3" class="lc-story-img">' +
+              '<img src="/assets/images/success-stories/story-4.jpg" alt="Success Story 4" class="lc-story-img">' +
+              '<img src="/assets/images/success-stories/story-5.jpg" alt="Success Story 5" class="lc-story-img">' +
+              '<img src="/assets/images/success-stories/story-6.jpg" alt="Success Story 6" class="lc-story-img">' +
+            '</div>' +
+            '<div class="lc-stories-nav">' +
+              '<button class="lc-stories-btn lc-stories-prev" id="lc-stories-prev">❮</button>' +
+              '<div class="lc-stories-dots" id="lc-stories-dots"></div>' +
+              '<button class="lc-stories-btn lc-stories-next" id="lc-stories-next">❯</button>' +
+            '</div>' +
+            '<p class="lc-stories-text">Join 1000+ candidates who landed their dream jobs. Your story could be next!</p>' +
+          '</div>' +
         '</div>' +
-        '<div class="lc-stories-nav">' +
-          '<button class="lc-stories-btn lc-stories-prev" id="lc-stories-prev">❮</button>' +
-          '<div class="lc-stories-dots" id="lc-stories-dots"></div>' +
-          '<button class="lc-stories-btn lc-stories-next" id="lc-stories-next">❯</button>' +
+        '<div class="lc-popup-right">' +
+          '<div class="lc-popup-head">' +
+            '<div class="lc-eyebrow">Wait — Before You Go</div>' +
+            '<h3>Still Struggling to Get<br>Interview Calls?</h3>' +
+            '<p>Book a free 30-min call. We\'ll diagnose your specific blockers and tell you exactly what to fix. Honest. No pressure.</p>' +
+          '</div>' +
+          '<form onsubmit="return false;">' +
+            formFieldsHTML('ep', true) +
+            '<button class="lcf-btn" onclick="lcSubmit(\'ep\', this)">Get My Free Discovery Call →</button>' +
+          '</form>' +
         '</div>' +
-        '<p class="lc-stories-text">Join 1000+ candidates who landed their dream jobs. Your story could be next!</p>' +
-      '</div>' +
-      formFieldsHTML('ep', true) +
-      '<button class="lcf-btn" onclick="lcSubmit(\'ep\', this)">Get My Free Discovery Call →</button>';
+      '</div>';
 
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
