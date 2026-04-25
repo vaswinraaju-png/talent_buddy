@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn exactly how ATS (Applicant Tracking System) filters work, why your resume gets rejected before a human reads it, and the specific fixes to pass every ATS scan in 2026.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="ATS Resume Rejection: Why Your CV Gets Filtered Out Before Anyone Reads It | TalentBuddy">
+  <meta property="og:description" content="Learn exactly how ATS filters work, why your resume gets rejected before a human reads it, and the specific fixes to pass every ATS scan in 2026.">
+  <meta property="og:url" content="https://www.talentbuddy.in/blog/ats-resume-rejection.html">
+  <title>ATS Resume Rejection: Why Your CV Gets Filtered Out Before Anyone Reads It | TalentBuddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ATS Resume Rejection: Why Your CV Gets Filtered Out Before Anyone Reads It",
+    "description": "Learn exactly how ATS filters work, why your resume gets rejected before a human reads it, and the specific fixes to pass every ATS scan in 2026.",
+    "author": { "@type": "Organization", "name": "TalentBuddy" },
+    "publisher": { "@type": "Organization", "name": "TalentBuddy", "url": "https://www.talentbuddy.in" },
+    "url": "https://www.talentbuddy.in/blog/ats-resume-rejection.html",
+    "datePublished": "2026-01-22",
+    "dateModified": "2026-04-01"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Which ATS systems are most commonly used in India?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Commonly used ATS platforms by Indian companies include Workday, Taleo, Greenhouse, iCIMS, and Naukri's proprietary recruiter portal. Each has slightly different parsing behaviour, which is why building a clean, keyword-rich, single-column CV is the safest universal approach." }
+      },
+      {
+        "@type": "Question",
+        "name": "Will a PDF resume pass ATS filters?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Modern ATS systems can typically parse PDFs — but only if they are text-based, not image-based. A PDF created from Word or Google Docs is usually fine. A scanned PDF or a heavily designed PDF with graphics and columns will often fail parsing entirely." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I know if my resume is ATS-compliant?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Copy and paste your CV text into a plain Notepad file. If the information is clean, readable, and in the right order, your CV is likely ATS-safe. If it's scrambled or missing sections, your formatting is causing problems. TalentBuddy offers free ATS audits on discovery calls." }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    .blog-post-hero { background: var(--navy); padding: 64px 5% 72px; position: relative; overflow: hidden; }
+    .blog-post-hero .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(33,100,243,.18) 1px, transparent 1px); background-size: 36px 36px; }
+    .blog-post-hero .glow1 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(124,58,237,.2) 0%, transparent 70%); top: -200px; right: -100px; pointer-events: none; }
+    .blog-post-hero-in { position: relative; z-index: 2; max-width: 760px; margin: 0 auto; }
+    .breadcrumb { font-size: .78rem; color: rgba(255,255,255,.44); margin-bottom: 1.2rem; }
+    .breadcrumb a { color: rgba(255,255,255,.55); text-decoration: none; }
+    .breadcrumb a:hover { color: white; }
+    .post-tag { display: inline-block; background: rgba(33,100,243,.25); color: #93C5FD; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 16px; }
+    .blog-post-hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; color: white; line-height: 1.18; margin-bottom: 1rem; }
+    .post-meta { color: rgba(255,255,255,.44); font-size: .8rem; }
+    .post-body { max-width: 760px; margin: 0 auto; padding: 56px 5% 40px; }
+    .post-body h2 { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 2.2rem 0 .9rem; }
+    .post-body h3 { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin: 1.6rem 0 .6rem; }
+    .post-body p { color: var(--muted); font-size: .94rem; line-height: 1.8; margin-bottom: 1.1rem; }
+    .post-body strong { color: var(--text); }
+    .post-body a { color: var(--blue); }
+    .callout { background: var(--blue-l); border-left: 4px solid var(--blue); border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 1.8rem 0; }
+    .callout p { color: var(--text); margin: 0; font-size: .9rem; }
+    .callout strong { color: var(--blue); }
+    .callout-warn { background: #FFF0E9; border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 1.8rem 0; }
+    .callout-warn p { color: var(--text); margin: 0; font-size: .9rem; }
+    .post-cta { background: var(--navy); border-radius: 18px; padding: 36px; text-align: center; margin: 2.5rem 0; position: relative; overflow: hidden; }
+    .post-cta .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(33,100,243,.18) 1px, transparent 1px); background-size: 28px 28px; }
+    .post-cta-in { position: relative; z-index: 2; }
+    .post-cta h3 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; margin-bottom: .7rem; }
+    .post-cta p { color: rgba(255,255,255,.56); font-size: .86rem; margin-bottom: 1.4rem; }
+    .checklist { list-style: none; margin: 1rem 0 1.4rem; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li { display: flex; gap: 10px; align-items: flex-start; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+    .checklist li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .xlist li::before { content: '✗'; color: var(--orange); }
+    .post-nav { display: flex; justify-content: space-between; gap: 16px; margin: 2rem 0; flex-wrap: wrap; }
+    .post-nav a { color: var(--blue); font-size: .86rem; font-weight: 600; text-decoration: none; }
+    .post-nav a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav aria-label="Main navigation">
+  <a href="/" class="logo" aria-label="TalentBuddy – Home">
+    <img src="../assets/images/logo.png" alt="TalentBuddy Logo" class="logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="logo-fallback">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <span class="logo-text"><span>Talent</span>Buddy</span>
+    </div>
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="/#process">How It Works</a></li>
+    <li><a href="/#success">Success Stories</a></li>
+    <li><a href="/#promise">Our Promise</a></li>
+    <li><a href="/#testimonials">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/blog/" class="nav-blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Blog</a>
+    <a href="tel:+919980291663" class="nav-cta">📞 Book a Free Call</a>
+  </div>
+  <button class="hbg" onclick="toggleNav()" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+<div class="mnav" id="mnav" role="navigation" aria-label="Mobile navigation">
+  <a href="/#process" onclick="closeNav()">How It Works</a>
+  <a href="/#success" onclick="closeNav()">Success Stories</a>
+  <a href="/blog/" onclick="closeNav()" class="mblog">📖 Blog</a>
+  <a href="tel:+919980291663" class="mcta" onclick="closeNav()">📞 Book Free Discovery Call</a>
+</div>
+
+<header class="blog-post-hero">
+  <div class="dots" aria-hidden="true"></div>
+  <div class="glow1" aria-hidden="true"></div>
+  <div class="blog-post-hero-in">
+    <nav aria-label="Breadcrumb" class="breadcrumb">
+      <a href="/">Home</a> &rsaquo; <a href="/blog/">Blog</a> &rsaquo; ATS Resume Rejection
+    </nav>
+    <span class="post-tag">Resume &amp; ATS</span>
+    <h1>ATS Resume Rejection: Why Your CV Gets Filtered Out Before Anyone Reads It</h1>
+    <p class="post-meta">By TalentBuddy Team &nbsp;·&nbsp; Updated April 2026 &nbsp;·&nbsp; 10 min read</p>
+  </div>
+</header>
+
+<main>
+  <article class="post-body">
+
+    <p>You spent two hours perfecting your resume. You're confident in your experience. You hit submit. And then — nothing. No acknowledgement, no rejection, no response. It disappears into the void.</p>
+
+    <p>Chances are, your resume was rejected within seconds — not by a person, but by software. <strong>Applicant Tracking Systems (ATS) are the invisible gatekeepers of hiring in India</strong>, and most job seekers have no idea they exist, let alone how to get past them.</p>
+
+    <p>This guide will show you exactly how ATS works, what causes rejection, and the specific fixes that improve your score — and your chances of finally getting interview calls. If you haven't yet, also read our overview of <a href="/blog/why-no-interview-calls.html">all the reasons you're not getting interview calls</a>.</p>
+
+    <h2>What Is ATS and Why Does Every Company Use It?</h2>
+
+    <p>An Applicant Tracking System is a software platform that companies use to receive, parse, and manage incoming job applications. When you apply for a role on a company website or through a portal, your CV is first processed by an ATS before any human sees it.</p>
+
+    <p>The ATS extracts text from your document, looks for specific data points (name, contact info, work history, skills, education), and scores your application against the job description. Applications that score below a threshold are automatically filtered out.</p>
+
+    <p>In India, large companies like TCS, Infosys, Wipro, and most multinationals use ATS for virtually every role. Mid-sized startups and product companies increasingly use them too. If a job has more than 20 applicants — and most do — there's a good chance an ATS is involved.</p>
+
+    <h2>The Most Common Reasons ATS Rejects Your CV</h2>
+
+    <h3>1. Formatting the ATS can't parse</h3>
+    <p>ATS software reads your CV like a document parser, not a human. When your CV uses complex formatting — tables, text boxes, multiple columns, headers and footers, or embedded graphics — the parser either reads it incorrectly or skips sections entirely.</p>
+
+    <div class="callout-warn">
+      <p><strong>Warning:</strong> Many popular Indian CV templates use two-column layouts with tables. These look visually polished but are extremely ATS-unfriendly. The information in the right column is often completely skipped by ATS parsers.</p>
+    </div>
+
+    <h3>2. Missing keywords from the job description</h3>
+    <p>ATS systems score CVs based on keyword matching. If the job description uses the phrase "project management" and your CV says "managed projects", some systems won't make the connection. If the job asks for "Python, Django, REST APIs" and you write "backend development", you may score near zero — even if your experience is relevant.</p>
+
+    <h3>3. Non-standard section headings</h3>
+    <p>ATS systems are programmed to look for specific section headings: "Work Experience", "Education", "Skills". If you use creative headings like "My Journey", "What I've Done", or "Tech Stack", the parser may not recognise the section and discard it entirely.</p>
+
+    <h3>4. Missing contact information in a parseable format</h3>
+    <p>Your phone number and email placed inside a header or footer box are often invisible to ATS parsers. They need to appear in the main body of the document, in plain text.</p>
+
+    <h3>5. Image-based or scanned CVs</h3>
+    <p>If your CV is a scanned PDF or contains your information as an embedded image, ATS systems cannot extract any text from it whatsoever. Your application will be effectively blank from the software's perspective.</p>
+
+    <h2>How to Build an ATS-Compliant CV: A Practical Checklist</h2>
+
+    <ul class="checklist">
+      <li>Use a single-column layout with standard section headings (Work Experience, Education, Skills, Certifications)</li>
+      <li>Save as a text-based PDF or .docx (not a scanned or image-based file)</li>
+      <li>Place contact details (phone, email, LinkedIn) at the top of the document in plain text</li>
+      <li>Mirror keywords from the target job description — use exact phrases, not paraphrases</li>
+      <li>Quantify achievements wherever possible ("Increased sales by 32%" not "Improved sales performance")</li>
+      <li>Avoid tables, text boxes, columns, headers/footers for critical content, and decorative graphics</li>
+      <li>Use a standard, readable font: Calibri, Arial, Garamond, or Georgia — not decorative display fonts</li>
+      <li>Include skills as a dedicated section with exact tool names: "MS Excel, Tableau, SQL" not "data tools"</li>
+    </ul>
+
+    <h3>What NOT to include</h3>
+    <ul class="checklist xlist">
+      <li>Profile photos (they add no ATS value and can introduce bias)</li>
+      <li>Objectives statements that aren't keyword-rich</li>
+      <li>Skill bars or ratings (ATS can't parse "Python ████░░ 80%")</li>
+      <li>References section (wastes space and adds zero ATS value)</li>
+    </ul>
+
+    <h2>The Keyword Strategy That Actually Works</h2>
+
+    <p>Open the job description. Read through it carefully and note every skill, tool, qualification, and phrase that appears repeatedly. These are the keywords the ATS is programmed to look for. Your CV must contain them — in context, not just in a keyword dump at the bottom.</p>
+
+    <p>For example, if a data analyst role mentions "SQL, Tableau, business intelligence, stakeholder reporting", these exact phrases need to appear in your Skills section and naturally within your Work Experience descriptions.</p>
+
+    <div class="callout">
+      <p><strong>Pro tip:</strong> Paste the job description text into a word frequency tool (like WordCounter or even a Google Sheet). The words that appear most often are the most heavily weighted keywords. Prioritise these in your CV.</p>
+    </div>
+
+    <p>Note that keyword stuffing — dumping 50 keywords at the bottom of your CV in white text — used to work. Modern ATS systems detect and penalise this. Natural, contextual use is now the correct approach.</p>
+
+    <h2>ATS Score vs. Human Shortlisting: What You're Actually Optimising For</h2>
+
+    <p>It's important to understand that ATS optimisation gets you past the filter — it doesn't get you the interview. Once your CV reaches a human recruiter, it needs to be clear, compelling, and credible.</p>
+
+    <p>This means your ATS-optimised CV also needs to be scannable by a person in 6–10 seconds (which is the average time recruiters spend on initial review), contain specific quantified achievements, and be tailored to the seniority level of the role.</p>
+
+    <p>The best CVs achieve both: they pass ATS filters <em>and</em> engage human readers. This is why a professional, role-specific CV — not a template — is so important. As part of our <a href="/">job placement services in India</a>, TalentBuddy rebuilds every candidate's CV from scratch, averaging a 92% ATS score improvement.</p>
+
+    <h2>Quick Test: Is Your CV ATS-Safe Right Now?</h2>
+    <p>Here's a simple 30-second check. Open your CV in Word or Google Docs. Select all text (Ctrl+A) and copy it. Paste it into a plain Notepad file. If the information appears readable, in the right order, with no scrambled lines, your CV's core structure is likely ATS-parseable. If it's a mess of displaced text, your formatting is causing problems.</p>
+
+    <div class="post-cta">
+      <div class="dots" aria-hidden="true"></div>
+      <div class="post-cta-in">
+        <h3>Want a Free ATS Audit of Your CV?</h3>
+        <p>On your free discovery call with TalentBuddy, we'll review your CV for ATS compliance and tell you exactly what's getting you rejected — before you send another application.</p>
+        <a href="tel:+919980291663" class="btn-blue">📞 Book My Free CV Audit Call</a>
+      </div>
+    </div>
+
+    <section aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-q">Which ATS systems are most commonly used in India?</summary>
+          <div class="faq-a"><p>Commonly used ATS platforms by Indian companies include Workday, Taleo, Greenhouse, iCIMS, and Naukri's proprietary recruiter portal. Each has slightly different parsing behaviour, which is why a clean, keyword-rich, single-column CV is the safest universal approach.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Will a PDF resume pass ATS filters?</summary>
+          <div class="faq-a"><p>Modern ATS systems can typically parse PDFs — but only if they are text-based, not image-based. A PDF created from Word or Google Docs is usually fine. A scanned PDF or a heavily designed PDF with graphics and columns will often fail parsing entirely.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">How do I know if my resume is ATS-compliant?</summary>
+          <div class="faq-a"><p>Copy and paste your CV text into a plain Notepad file. If the information is clean, readable, and in the right order, your CV is likely ATS-safe. If it's scrambled or missing sections, your formatting is causing problems. TalentBuddy offers free ATS audits on discovery calls — <a href="tel:+919980291663">book here</a>.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <div class="post-nav">
+      <a href="/blog/why-no-interview-calls.html">← Why No Interview Calls</a>
+      <a href="/blog/hidden-job-market-india.html">Next: Hidden Job Market India →</a>
+    </div>
+
+  </article>
+</main>
+
+<footer>
+  <div class="ft">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+          <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center"><svg style="width:18px;height:18px;fill:white" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="ft-brand-name">TalentBuddy Job Placement</div>
+        </div>
+        <p class="ft-brand-desc">India's job placement services partner. Transparent. Ethical. Realtime tracking.</p>
+        <p style="margin-top:10px;font-size:.75rem;color:rgba(255,255,255,.48)">📞 <a href="tel:+919980291663" style="color:rgba(255,255,255,.6);text-decoration:none">+91 99802 91663</a></p>
+      </div>
+      <div class="ft-links">
+        <div class="fc"><h5>Company</h5><ul><li><a href="/">Homepage</a></li><li><a href="/#process">How It Works</a></li><li><a href="/#contact">Book Free Call</a></li></ul></div>
+        <div class="fc"><h5>More Articles</h5><ul><li><a href="/blog/">All Articles</a></li><li><a href="/blog/why-no-interview-calls.html">Why No Interview Calls</a></li><li><a href="/blog/hidden-job-market-india.html">Hidden Job Market India</a></li><li><a href="/blog/resume-mistakes-freshers.html">Resume Mistakes Freshers</a></li><li><a href="/blog/get-job-without-referrals.html">Get Job Without Referrals</a></li></ul></div>
+      </div>
+    </div>
+    <div class="ft-bot"><span>© 2026 TalentBuddy Job Placement Services India. All rights reserved.</span><div style="display:flex;gap:18px"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div>
+  </div>
+</footer>
+
+<a href="https://wa.me/919980291663" class="waf" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg></a>
+<script src="../assets/js/main.js" defer></script>
+</body>
+</html>
