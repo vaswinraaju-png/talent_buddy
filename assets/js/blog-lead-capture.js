@@ -251,18 +251,18 @@
         pointer-events: all;
       }
       #lc-popup {
-        background: linear-gradient(135deg, #1a1410 0%, #2a1f15 100%);
-        border: 1px solid rgba(255, 140, 60, .25);
+        background: linear-gradient(135deg, #1f0f00 0%, #2d1500 100%);
+        border: 1px solid rgba(255, 140, 60, .35);
         border-radius: 20px;
         padding: 32px 28px;
-        max-width: 480px;
+        max-width: 580px;
         width: 100%;
         position: relative;
         max-height: 90vh;
         overflow-y: auto;
         transform: scale(.95);
         transition: transform .3s;
-        box-shadow: 0 24px 80px rgba(255, 100, 20, .3);
+        box-shadow: 0 24px 80px rgba(255, 120, 40, .4);
       }
       #lc-overlay.lc-show #lc-popup { transform: scale(1); }
       .lc-popup-head { margin-bottom: 20px; }
