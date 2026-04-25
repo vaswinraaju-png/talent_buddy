@@ -3,13 +3,10 @@
    File: assets/js/blog-lead-capture.js
    Include AFTER main.js on all blog article pages.
 
-   Renders 3 lead capture surfaces:
-   1. Fixed sidebar (top-right, visible only on blog content) (desktop ≥900px)
-      - Hides at hero section, shows on scroll past hero
-      - Fades out smoothly at footer
-      - When closed, shows animated pulse button to reopen
-   2. Mobile bottom bar (< 900px) — collapses to a tab, expands on tap
-   3. Exit-intent popup (mouse leaves viewport upward on desktop;
+   Renders 2 lead capture surfaces:
+   1. Fixed sidebar (desktop: always visible with good margin;
+                     mobile: shows after 40% scroll with close button)
+   2. Exit-intent popup (mouse leaves viewport upward on desktop;
                          30s timer fallback on mobile)
 
    All surfaces submit to the same Google Forms endpoint as homepage.
@@ -212,49 +209,6 @@
       }
       .lc-close:hover { color: white; }
 
-      /* ── 2. MOBILE BOTTOM BAR ── */
-      #lc-mobile-bar {
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        background: #0A1628;
-        border-top: 1px solid rgba(255,255,255,.12);
-        z-index: 90;
-        transform: translateY(calc(100% - 56px));
-        transition: transform .4s cubic-bezier(.25,.46,.45,.94);
-        box-shadow: 0 -8px 40px rgba(0,0,0,.4);
-        max-height: 92vh;
-        overflow-y: auto;
-        display: none;
-      }
-      #lc-mobile-bar.lc-expanded { transform: translateY(0); }
-      #lc-mobile-bar.lc-hidden { transform: translateY(100%); }
-      .lc-bar-handle {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        height: 56px;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-      .lc-bar-handle-left { display: flex; align-items: center; gap: 10px; }
-      .lc-bar-pill {
-        background: linear-gradient(135deg, #2164F3, #7C3AED);
-        color: white;
-        font-family: 'Sora', sans-serif;
-        font-size: .7rem;
-        font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 100px;
-        text-transform: uppercase;
-        letter-spacing: .4px;
-      }
-      .lc-bar-handle span { color: white; font-size: .85rem; font-weight: 600; }
-      .lc-bar-arrow { color: rgba(255,255,255,.5); font-size: 1.1rem; transition: transform .3s; }
-      #lc-mobile-bar.lc-expanded .lc-bar-arrow { transform: rotate(180deg); }
-      .lc-bar-body { padding: 0 20px 24px; }
-      .lc-bar-body .lc-sidebar-head { display: none; }
-
 
       #lc-overlay {
         position: fixed;
@@ -310,7 +264,6 @@
           width: 320px;
         }
         #lc-sidebar .lc-close { display: none !important; }
-        #lc-mobile-bar { display: none !important; }
       }
       @media (max-width: 899px) {
         #lc-sidebar { 
@@ -322,7 +275,6 @@
           max-width: 340px;
         }
         #lc-sidebar .lc-close { display: block !important; }
-        #lc-mobile-bar { display: block; }
         .lcf-row { grid-template-columns: 1fr; }
       }
     `;
@@ -393,50 +345,7 @@
   }
 
   /* ══════════════════════════════════════════
-     2. MOBILE BOTTOM BAR
-  ══════════════════════════════════════════ */
-  function buildMobileBar() {
-    var bar = document.createElement('div');
-    bar.id  = 'lc-mobile-bar';
-    bar.innerHTML =
-      '<div class="lc-bar-handle" id="lc-bar-handle">' +
-        '<div class="lc-bar-handle-left">' +
-          '<div class="lc-bar-pill">Free Call</div>' +
-          '<span>Get Interview Calls Faster</span>' +
-        '</div>' +
-        '<span class="lc-bar-arrow">▲</span>' +
-      '</div>' +
-      '<div class="lc-bar-body">' +
-        '<div class="lc-sidebar-head">' +
-          '<h4>🎯 Free 30-Min Discovery Call</h4>' +
-          '<p>Tell us about yourself — we\'ll diagnose your job search blockers for free.</p>' +
-        '</div>' +
-        formFieldsHTML('mb') +
-        '<button class="lcf-btn" onclick="lcSubmit(\'mb\', this)">Get My Free Call →</button>' +
-      '</div>';
-
-    document.body.appendChild(bar);
-
-    // Show bar after 20% scroll
-    var barShown = false;
-    window.addEventListener('scroll', function () {
-      var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-      if (pct > 0.20 && !barShown && !alreadySubmitted()) {
-        barShown = true;
-        bar.style.display = 'block';
-        // Small delay so CSS transition plays
-        setTimeout(function () { bar.style.transform = 'translateY(calc(100% - 56px))'; }, 50);
-      }
-    }, { passive: true });
-
-    document.getElementById('lc-bar-handle').addEventListener('click', function () {
-      bar.classList.toggle('lc-expanded');
-    });
-  }
-
-
-  /* ══════════════════════════════════════════
-     3. EXIT-INTENT POPUP
+     2. EXIT-INTENT POPUP
   ══════════════════════════════════════════ */
   function buildExitPopup() {
     var overlay = document.createElement('div');
@@ -518,9 +427,6 @@
     
     buildSidebar();
     console.log('[LC] Sidebar built');
-    
-    buildMobileBar();
-    console.log('[LC] Mobile bar built');
     
     buildExitPopup();
     console.log('[LC] Exit popup built');
