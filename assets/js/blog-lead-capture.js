@@ -174,16 +174,19 @@
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
         transition: opacity .3s ease-in-out;
-        opacity: 0;
-        pointer-events: none;
+        opacity: 1;
+        pointer-events: all;
+        display: block !important;
       }
       #lc-sidebar.lc-visible {
         opacity: 1;
         pointer-events: all;
+        display: block !important;
       }
       #lc-sidebar.lc-hidden { 
         opacity: 0;
         pointer-events: none;
+        display: block !important;
       }
 
       /* ── TOGGLE BUTTON (appears when sidebar closed) ── */
@@ -361,6 +364,8 @@
      1. FIXED SIDEBAR (TOP-RIGHT, ONLY ON BLOG CONTENT)
   ══════════════════════════════════════════ */
   function buildSidebar() {
+    console.log('[LC] Building sidebar...');
+    
     var sidebar = document.createElement('div');
     sidebar.id  = 'lc-sidebar';
     sidebar.innerHTML =
@@ -373,6 +378,7 @@
       '<button class="lcf-btn" onclick="lcSubmit(\'sb\', this)">Get My Free Call →</button>';
 
     document.body.appendChild(sidebar);
+    console.log('[LC] Sidebar created and appended to body', sidebar);
 
     // Create toggle button
     var toggleBtn = document.createElement('button');
@@ -380,15 +386,18 @@
     toggleBtn.textContent = '📞';
     toggleBtn.setAttribute('aria-label', 'Open lead form');
     document.body.appendChild(toggleBtn);
+    console.log('[LC] Toggle button created', toggleBtn);
 
     // Close button hides sidebar and shows toggle button
     document.getElementById('lc-sidebar-close').addEventListener('click', function () {
+      console.log('[LC] Close button clicked');
       sidebar.classList.add('lc-hidden');
       toggleBtn.classList.add('lc-visible');
     });
 
     // Toggle button opens sidebar
     toggleBtn.addEventListener('click', function () {
+      console.log('[LC] Toggle button clicked');
       sidebar.classList.remove('lc-hidden');
       toggleBtn.classList.remove('lc-visible');
     });
@@ -396,6 +405,7 @@
     // Show/hide sidebar based on scroll position and footer
     var footer = document.querySelector('footer');
     var heroHeight = window.innerHeight * 1.5; // Assume hero is ~1.5x viewport height
+    console.log('[LC] Hero height set to:', heroHeight, 'Footer found:', !!footer);
 
     function updateSidebarVisibility() {
       if (alreadySubmitted()) {
@@ -411,6 +421,8 @@
       // Check if we're past the hero section (scrolled down) and footer isn't visible
       var isPastHero = scrollY > heroHeight;
       var isBeforeFooter = footerTop > window.innerHeight;
+
+      console.log('[LC] Visibility check - scrollY:', scrollY, 'isPastHero:', isPastHero, 'isBeforeFooter:', isBeforeFooter, 'isClosed:', isClosed);
 
       // Show sidebar if past hero and before footer, and not manually closed
       if (isPastHero && isBeforeFooter && !isClosed) {
@@ -547,12 +559,26 @@
 
   /* ── INIT ── */
   function init() {
-    if (alreadySubmitted()) return; // don't show forms if already submitted this session
+    console.log('[LC] Initializing lead capture system...');
+    
+    if (alreadySubmitted()) {
+      console.log('[LC] User already submitted, skipping');
+      return;
+    }
 
     injectStyles();
+    console.log('[LC] Styles injected');
+    
     buildSidebar();
+    console.log('[LC] Sidebar built');
+    
     buildMobileBar();
+    console.log('[LC] Mobile bar built');
+    
     buildExitPopup();
+    console.log('[LC] Exit popup built');
+    
+    console.log('[LC] Lead capture system ready!');
   }
 
   if (document.readyState === 'loading') {
