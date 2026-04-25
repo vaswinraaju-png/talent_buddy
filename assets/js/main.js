@@ -5,36 +5,48 @@
 
 /* ── NAV TOGGLE ── */
 (function () {
-  const mnav   = document.getElementById('mnav');
-  const hbgBtn = document.querySelector('.hbg');
+  // Wait until DOM is ready before querying elements, so the
+  // hamburger never silently fails on slow/deferred loads.
+  function initNav() {
+    const mnav   = document.getElementById('mnav');
+    const hbgBtn = document.querySelector('.hbg');
 
-  function toggleNav() {
-    const isOpen = mnav.classList.toggle('open');
-    if (hbgBtn) hbgBtn.setAttribute('aria-expanded', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-  }
+    if (!mnav || !hbgBtn) return; // guard: elements not present on this page
 
-  function closeNav() {
-    mnav.classList.remove('open');
-    if (hbgBtn) hbgBtn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  // Expose to inline onclick attributes
-  window.toggleNav = toggleNav;
-  window.closeNav  = closeNav;
-
-  // Close mobile nav when clicking outside
-  document.addEventListener('click', function (e) {
-    if (mnav.classList.contains('open') && !mnav.contains(e.target) && !hbgBtn.contains(e.target)) {
-      closeNav();
+    function toggleNav() {
+      const isOpen = mnav.classList.toggle('open');
+      hbgBtn.setAttribute('aria-expanded', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
     }
-  });
 
-  // Close mobile nav on Escape key
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && mnav.classList.contains('open')) closeNav();
-  });
+    function closeNav() {
+      mnav.classList.remove('open');
+      hbgBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    // Expose to inline onclick attributes
+    window.toggleNav = toggleNav;
+    window.closeNav  = closeNav;
+
+    // Close mobile nav when clicking outside
+    document.addEventListener('click', function (e) {
+      if (mnav.classList.contains('open') && !mnav.contains(e.target) && !hbgBtn.contains(e.target)) {
+        closeNav();
+      }
+    });
+
+    // Close mobile nav on Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mnav.classList.contains('open')) closeNav();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNav);
+  } else {
+    initNav();
+  }
 })();
 
 
@@ -57,9 +69,15 @@ document.addEventListener('click', function (e) {
   const items = document.querySelectorAll('.fi');
   if (!items.length) return;
 
+  // Map each element to its global index so stagger delay is consistent
+  // regardless of how many items arrive in each IntersectionObserver batch.
+  const indexMap = new Map();
+  items.forEach(function (el, i) { indexMap.set(el, i); });
+
   const obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry, i) {
+    entries.forEach(function (entry) {
       if (entry.isIntersecting) {
+        const i = indexMap.get(entry.target) || 0;
         setTimeout(function () {
           entry.target.classList.add('vis');
         }, i * 65);
@@ -102,7 +120,12 @@ document.addEventListener('click', function (e) {
     return d;
   });
 
-  function cardW()   { return cards[0].offsetWidth + GAP; }
+  function cardW() {
+    // Guard: if first card hasn't rendered yet (offsetWidth === 0),
+    // fall back to a reasonable default so slider math never breaks.
+    const w = cards[0] ? cards[0].offsetWidth : 0;
+    return (w > 0 ? w : 380) + GAP;
+  }
   function visible() { return Math.max(1, Math.floor(sliderOuter.clientWidth * 0.9 / cardW())); }
   function maxIdx()  { return Math.max(0, total - visible()); }
 
