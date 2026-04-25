@@ -69,10 +69,22 @@ document.addEventListener('click', function (e) {
   const items = document.querySelectorAll('.fi');
   if (!items.length) return;
 
-  // Map each element to its global index so stagger delay is consistent
-  // regardless of how many items arrive in each IntersectionObserver batch.
+  // Group items by their closest section/parent so stagger resets per section.
+  // This prevents item #40 on the page waiting 40*40ms = 1.6s before appearing.
+  const sectionMap = new Map();
+  items.forEach(function (el) {
+    const section = el.closest('section, header, .slider-outer, footer') || document.body;
+    if (!sectionMap.has(section)) sectionMap.set(section, []);
+    sectionMap.get(section).push(el);
+  });
+
+  // Build a per-element index that resets at each section boundary, capped at 5
   const indexMap = new Map();
-  items.forEach(function (el, i) { indexMap.set(el, i); });
+  sectionMap.forEach(function (els) {
+    els.forEach(function (el, i) {
+      indexMap.set(el, Math.min(i, 5)); // cap stagger so nothing waits >200ms
+    });
+  });
 
   const obs = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
@@ -80,11 +92,14 @@ document.addEventListener('click', function (e) {
         const i = indexMap.get(entry.target) || 0;
         setTimeout(function () {
           entry.target.classList.add('vis');
-        }, i * 65);
-        obs.unobserve(entry.target); // stop observing once visible
+        }, i * 40); // 40ms per step (was 65ms) — snappier
+        obs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.08 });
+  }, {
+    threshold: 0.05,           // trigger earlier (was 0.08)
+    rootMargin: '0px 0px -40px 0px'  // reveal before fully in viewport
+  });
 
   items.forEach(function (el) { obs.observe(el); });
 })();
