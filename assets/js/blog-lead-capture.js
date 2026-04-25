@@ -402,10 +402,8 @@
       toggleBtn.classList.remove('lc-visible');
     });
 
-    // Show/hide sidebar based on scroll position and footer
+    // Show/hide sidebar based on scroll depth (30%-80%)
     var footer = document.querySelector('footer');
-    var heroHeight = window.innerHeight * 1.5; // Assume hero is ~1.5x viewport height
-    console.log('[LC] Hero height set to:', heroHeight, 'Footer found:', !!footer);
 
     function updateSidebarVisibility() {
       if (alreadySubmitted()) {
@@ -414,26 +412,25 @@
         return;
       }
 
-      var isClosed = sidebar.classList.contains('lc-hidden');
+      // Calculate scroll percentage
       var scrollY = window.scrollY;
-      var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var scrollPercent = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
 
-      // Check if we're past the hero section (scrolled down) and footer isn't visible
-      var isPastHero = scrollY > heroHeight;
-      var isBeforeFooter = footerTop > window.innerHeight;
+      var isClosed = sidebar.classList.contains('lc-hidden');
 
-      console.log('[LC] Visibility check - scrollY:', scrollY, 'isPastHero:', isPastHero, 'isBeforeFooter:', isBeforeFooter, 'isClosed:', isClosed);
+      console.log('[LC] Scroll depth:', scrollPercent.toFixed(1) + '%', 'isClosed:', isClosed);
 
-      // Show sidebar if past hero and before footer, and not manually closed
-      if (isPastHero && isBeforeFooter && !isClosed) {
+      // Show sidebar only between 30%-80% scroll depth and not manually closed
+      if (scrollPercent >= 30 && scrollPercent <= 80 && !isClosed) {
         sidebar.classList.add('lc-visible');
         toggleBtn.classList.remove('lc-visible');
-      } else if (isPastHero && isBeforeFooter && isClosed) {
+      } else if (scrollPercent >= 30 && scrollPercent <= 80 && isClosed) {
         // Show toggle button instead if closed
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.add('lc-visible');
       } else {
-        // Hide both when outside the content area
+        // Hide both when outside the 30%-80% range
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.remove('lc-visible');
       }
