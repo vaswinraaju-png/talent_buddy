@@ -393,40 +393,42 @@
       toggleBtn.classList.remove('lc-visible');
     });
 
-    // Show/hide sidebar based on blog content visibility
-    var article = document.querySelector('article, .blog-body, main');
+    // Show/hide sidebar based on scroll position and footer
     var footer = document.querySelector('footer');
+    var heroHeight = window.innerHeight * 1.5; // Assume hero is ~1.5x viewport height
 
     function updateSidebarVisibility() {
       if (alreadySubmitted()) {
-        sidebar.style.display = 'none';
-        toggleBtn.style.display = 'none';
+        sidebar.classList.remove('lc-visible');
+        toggleBtn.classList.remove('lc-visible');
         return;
       }
 
-      var articleTop = article ? article.getBoundingClientRect().top : Infinity;
+      var isClosed = sidebar.classList.contains('lc-hidden');
+      var scrollY = window.scrollY;
       var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
 
-      // Check if sidebar is manually closed
-      var isClosed = sidebar.classList.contains('lc-hidden');
+      // Check if we're past the hero section (scrolled down) and footer isn't visible
+      var isPastHero = scrollY > heroHeight;
+      var isBeforeFooter = footerTop > window.innerHeight;
 
-      // Show sidebar only when article is visible, footer hasn't entered, and not manually closed
-      if (articleTop < window.innerHeight && footerTop > window.innerHeight && !isClosed) {
+      // Show sidebar if past hero and before footer, and not manually closed
+      if (isPastHero && isBeforeFooter && !isClosed) {
         sidebar.classList.add('lc-visible');
         toggleBtn.classList.remove('lc-visible');
-      } else if (articleTop < window.innerHeight && footerTop > window.innerHeight && isClosed) {
+      } else if (isPastHero && isBeforeFooter && isClosed) {
         // Show toggle button instead if closed
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.add('lc-visible');
       } else {
-        // Hide both when outside blog content area
+        // Hide both when outside the content area
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.remove('lc-visible');
       }
     }
 
-    // Initial check
-    setTimeout(updateSidebarVisibility, 100);
+    // Initial check after page loads
+    setTimeout(updateSidebarVisibility, 200);
 
     // Monitor scroll and resize
     window.addEventListener('scroll', updateSidebarVisibility, { passive: true });
