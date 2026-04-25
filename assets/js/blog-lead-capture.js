@@ -155,7 +155,7 @@
       }
       .lcf-btn:hover { opacity: .9; transform: translateY(-1px); }
 
-      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, NON-STICKY) ── */
+      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, ONLY ON BLOG CONTENT) ── */
       #lc-sidebar {
         position: fixed;
         top: 80px;
@@ -171,8 +171,13 @@
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
+        transition: opacity .3s ease-in-out;
+        opacity: 1;
+        display: none;
       }
-      #lc-sidebar.lc-hidden { display: none; }
+      #lc-sidebar.lc-hidden { 
+        display: none !important;
+      }
       .lc-sidebar-head { margin-bottom: 14px; }
       .lc-sidebar-head h4 {
         font-family: 'Sora', sans-serif;
@@ -340,7 +345,7 @@
   }
 
   /* ══════════════════════════════════════════
-     1. FIXED SIDEBAR (TOP-RIGHT, NON-STICKY)
+     1. FIXED SIDEBAR (TOP-RIGHT, ONLY ON BLOG CONTENT)
   ══════════════════════════════════════════ */
   function buildSidebar() {
     var sidebar = document.createElement('div');
@@ -360,6 +365,34 @@
     document.getElementById('lc-sidebar-close').addEventListener('click', function () {
       sidebar.classList.add('lc-hidden');
     });
+
+    // Show/hide sidebar based on blog content visibility
+    var article = document.querySelector('article, .blog-body, main');
+    var footer = document.querySelector('footer');
+
+    function updateSidebarVisibility() {
+      if (alreadySubmitted() || sidebar.classList.contains('lc-hidden')) {
+        sidebar.style.display = 'none';
+        return;
+      }
+
+      var articleTop = article ? article.getBoundingClientRect().top : Infinity;
+      var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
+
+      // Show sidebar only when article is visible and footer hasn't entered viewport
+      if (articleTop < window.innerHeight && footerTop > window.innerHeight) {
+        sidebar.style.display = 'block';
+      } else {
+        sidebar.style.display = 'none';
+      }
+    }
+
+    // Initial check
+    setTimeout(updateSidebarVisibility, 100);
+
+    // Monitor scroll and resize
+    window.addEventListener('scroll', updateSidebarVisibility, { passive: true });
+    window.addEventListener('resize', updateSidebarVisibility, { passive: true });
   }
 
   /* ══════════════════════════════════════════
