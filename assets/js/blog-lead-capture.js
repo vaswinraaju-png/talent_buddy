@@ -29,8 +29,8 @@
   };
 
   /* ── SHARED FORM FIELDS HTML ── */
-  function formFieldsHTML(prefix) {
-    return '<div class="lcf-row">' +
+  function formFieldsHTML(prefix, includeSituation) {
+    var html = '<div class="lcf-row">' +
       '<div class="lcf-fg"><label>First Name</label><input id="' + prefix + '_fname" type="text" placeholder="Rahul" autocomplete="given-name"></div>' +
       '<div class="lcf-fg"><label>Last Name</label><input id="' + prefix + '_lname" type="text" placeholder="Kumar" autocomplete="family-name"></div>' +
     '</div>' +
@@ -53,18 +53,24 @@
         '<option>Sales / Marketing Professional</option>' +
         '<option>Other</option>' +
       '</select>' +
-    '</div>' +
-    '<div class="lcf-fg">' +
-      '<label>My Current Situation</label>' +
-      '<select id="' + prefix + '_situation">' +
-        '<option value="">Select the scenario that fits you best</option>' +
-        '<option>I am a fresher with no work experience and struggling to get my first job interview</option>' +
-        '<option>I have been applying to 50+ jobs for months but getting zero interview calls</option>' +
-        '<option>I am currently employed but want to switch to a better role or higher pay</option>' +
-        '<option>I want to change my career domain completely and do not know how to reposition myself</option>' +
-        '<option>I have an overseas job opportunity and need help with the process and visa filing</option>' +
-      '</select>' +
     '</div>';
+    
+    // Include "My Current Situation" only if explicitly requested (for exit popup)
+    if (includeSituation) {
+      html += '<div class="lcf-fg">' +
+        '<label>My Current Situation</label>' +
+        '<select id="' + prefix + '_situation">' +
+          '<option value="">Select the scenario that fits you best</option>' +
+          '<option>I am a fresher with no work experience and struggling to get my first job interview</option>' +
+          '<option>I have been applying to 50+ jobs for months but getting zero interview calls</option>' +
+          '<option>I am currently employed but want to switch to a better role or higher pay</option>' +
+          '<option>I want to change my career domain completely and do not know how to reposition myself</option>' +
+          '<option>I have an overseas job opportunity and need help with the process and visa filing</option>' +
+        '</select>' +
+      '</div>';
+    }
+    
+    return html;
   }
 
   /* ── SUBMIT HANDLER ── */
@@ -311,7 +317,7 @@
         '<h4>🎯 Get Interview Calls Faster</h4>' +
         '<p>Free 30-min call. We\'ll diagnose your job search and tell you exactly what to fix.</p>' +
       '</div>' +
-      formFieldsHTML('sb') +
+      formFieldsHTML('sb', false) +
       '<button class="lcf-btn" onclick="lcSubmit(\'sb\', this)">Get My Free Call →</button>';
 
     document.body.appendChild(sidebar);
@@ -379,7 +385,7 @@
         '<h3>Still Struggling to Get<br>Interview Calls?</h3>' +
         '<p>Book a free 30-min call. We\'ll diagnose your specific blockers and tell you exactly what to fix. Honest. No pressure.</p>' +
       '</div>' +
-      formFieldsHTML('ep') +
+      formFieldsHTML('ep', true) +
       '<button class="lcf-btn" onclick="lcSubmit(\'ep\', this)">Get My Free Discovery Call →</button>';
 
     overlay.appendChild(popup);
