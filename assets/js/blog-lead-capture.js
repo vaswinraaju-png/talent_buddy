@@ -251,8 +251,8 @@
         pointer-events: all;
       }
       #lc-popup {
-        background: #0A1628;
-        border: 1px solid rgba(255,255,255,.12);
+        background: linear-gradient(135deg, #1a1410 0%, #2a1f15 100%);
+        border: 1px solid rgba(255, 140, 60, .25);
         border-radius: 20px;
         padding: 32px 28px;
         max-width: 480px;
@@ -262,21 +262,46 @@
         overflow-y: auto;
         transform: scale(.95);
         transition: transform .3s;
-        box-shadow: 0 24px 80px rgba(0,0,0,.6);
+        box-shadow: 0 24px 80px rgba(255, 100, 20, .3);
       }
       #lc-overlay.lc-show #lc-popup { transform: scale(1); }
       .lc-popup-head { margin-bottom: 20px; }
       .lc-popup-head .lc-eyebrow {
         font-size: .68rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: .6px;
-        color: #C4B5FD; margin-bottom: 8px;
+        color: #FFB366; margin-bottom: 8px;
       }
       .lc-popup-head h3 {
         font-family: 'Sora', sans-serif;
         font-size: 1.15rem; font-weight: 800;
         color: white; line-height: 1.25; margin-bottom: 6px;
       }
-      .lc-popup-head p { font-size: .82rem; color: rgba(255,255,255,.5); line-height: 1.55; }
+      .lc-popup-head p { font-size: .82rem; color: rgba(255,255,255,.6); line-height: 1.55; }
+
+      /* ── EXIT POPUP FORM FIELDS (Orange Accent) ── */
+      #lc-popup .lcf-fg label {
+        color: rgba(255, 200, 150, .8);
+      }
+      #lc-popup .lcf-fg input, 
+      #lc-popup .lcf-fg select {
+        border-color: rgba(255, 140, 60, .25);
+        background: rgba(255, 140, 60, .05);
+      }
+      #lc-popup .lcf-fg input::placeholder {
+        color: rgba(255, 140, 60, .4);
+      }
+      #lc-popup .lcf-fg input:focus,
+      #lc-popup .lcf-fg select:focus {
+        border-color: #FF8C3C;
+        background: rgba(255, 140, 60, .15);
+      }
+      #lc-popup .lcf-btn {
+        background: linear-gradient(135deg, #FF8C3C, #FF6B20);
+        box-shadow: 0 8px 24px rgba(255, 107, 32, .4);
+      }
+      #lc-popup .lcf-btn:hover {
+        opacity: .95;
+      }
 
       /* ── RESPONSIVE ── */
       @media (min-width: 900px) {
