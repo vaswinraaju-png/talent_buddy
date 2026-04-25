@@ -418,10 +418,6 @@
 
     function showPopup() {
       if (alreadySubmitted()) return;
-      try {
-        if (sessionStorage.getItem('lc_popup_seen')) return;
-        sessionStorage.setItem('lc_popup_seen', '1');
-      } catch(e) {}
       overlay.classList.add('lc-show');
     }
 
@@ -430,10 +426,8 @@
     }
 
     // Desktop: mouse exits viewport upward
-    var triggered = false;
     document.addEventListener('mouseleave', function (e) {
-      if (e.clientY < 20 && !triggered) {
-        triggered = true;
+      if (e.clientY < 20) {
         showPopup();
       }
     });
