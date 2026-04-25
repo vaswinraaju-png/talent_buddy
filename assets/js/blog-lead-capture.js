@@ -4,7 +4,7 @@
    Include AFTER main.js on all blog article pages.
 
    Renders 4 lead capture surfaces:
-   1. Sticky sidebar (desktop ≥900px)
+   1. Fixed sidebar (top-right, NOT sticky/floating) (desktop ≥900px)
    2. Mobile bottom bar (< 900px) — collapses to a tab, expands on tap
    3. Mid-article inline banner (injected after 3rd <h2> or 40% scroll)
    4. Exit-intent popup (mouse leaves viewport upward on desktop;
@@ -155,51 +155,24 @@
       }
       .lcf-btn:hover { opacity: .9; transform: translateY(-1px); }
 
-      /* ── 1. STICKY SIDEBAR ── */
+      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, NON-STICKY) ── */
       #lc-sidebar {
         position: fixed;
-        top: 50%;
-        right: 0;
-        transform: translateY(-50%);
+        top: 80px;
+        right: 20px;
         width: 300px;
         background: #0A1628;
         border: 1px solid rgba(255,255,255,.1);
-        border-right: none;
-        border-radius: 16px 0 0 16px;
+        border-radius: 16px;
         padding: 22px 20px;
         z-index: 90;
-        box-shadow: -8px 0 40px rgba(0,0,0,.3);
-        transition: transform .4s cubic-bezier(.25,.46,.45,.94), right .4s;
-        max-height: 90vh;
+        box-shadow: 0 8px 40px rgba(0,0,0,.3);
+        max-height: calc(100vh - 120px);
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
       }
-      #lc-sidebar.lc-hidden { right: -310px; transform: translateY(-50%); }
-      #lc-sidebar-tab {
-        position: fixed;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #2164F3;
-        color: white;
-        font-family: 'Sora', sans-serif;
-        font-size: .72rem;
-        font-weight: 700;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        padding: 16px 8px;
-        border-radius: 10px 0 0 10px;
-        cursor: pointer;
-        z-index: 91;
-        letter-spacing: .5px;
-        text-transform: uppercase;
-        box-shadow: -4px 0 16px rgba(33,100,243,.4);
-        transition: background .2s;
-        user-select: none;
-        display: none;
-      }
-      #lc-sidebar-tab:hover { background: #1449C8; }
+      #lc-sidebar.lc-hidden { display: none; }
       .lc-sidebar-head { margin-bottom: 14px; }
       .lc-sidebar-head h4 {
         font-family: 'Sora', sans-serif;
@@ -359,7 +332,6 @@
       }
       @media (max-width: 899px) {
         #lc-sidebar { display: none !important; }
-        #lc-sidebar-tab { display: none !important; }
         #lc-mobile-bar { display: block; }
         .lcf-row { grid-template-columns: 1fr; }
       }
@@ -368,7 +340,7 @@
   }
 
   /* ══════════════════════════════════════════
-     1. STICKY SIDEBAR
+     1. FIXED SIDEBAR (TOP-RIGHT, NON-STICKY)
   ══════════════════════════════════════════ */
   function buildSidebar() {
     var sidebar = document.createElement('div');
@@ -382,33 +354,11 @@
       formFieldsHTML('sb') +
       '<button class="lcf-btn" onclick="lcSubmit(\'sb\', this)">Get My Free Call →</button>';
 
-    var tab = document.createElement('div');
-    tab.id  = 'lc-sidebar-tab';
-    tab.textContent = '📞 Free Call';
-    tab.setAttribute('role', 'button');
-    tab.setAttribute('aria-label', 'Open lead form');
-
     document.body.appendChild(sidebar);
-    document.body.appendChild(tab);
 
-    // Show tab after scrolling 30%
-    var shown = false;
-    window.addEventListener('scroll', function () {
-      var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-      if (pct > 0.30 && !shown) {
-        shown = true;
-        // sidebar visible by default — tab shows when sidebar closed
-      }
-    }, { passive: true });
-
+    // Close button hides the sidebar (user can still see other forms)
     document.getElementById('lc-sidebar-close').addEventListener('click', function () {
       sidebar.classList.add('lc-hidden');
-      tab.style.display = 'flex';
-    });
-
-    tab.addEventListener('click', function () {
-      sidebar.classList.remove('lc-hidden');
-      tab.style.display = 'none';
     });
   }
 
