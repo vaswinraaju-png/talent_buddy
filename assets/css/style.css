@@ -406,6 +406,10 @@ section { padding: 80px 5%; }
 .btn-wh:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
 .btn-wa { background: #25D366; color: white; padding: 14px 32px; border-radius: 10px; font-weight: 700; font-size: .93rem; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
 .btn-wa:hover { background: #1fbe5a; transform: translateY(-2px); }
+/* Ghost variant for dark-background CTAs — use .btn-wa.btn-ghost-dark instead of
+   overriding .btn-wa inline, so the WhatsApp green is never accidentally clobbered. */
+.btn-wa.btn-ghost-dark { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: white; }
+.btn-wa.btn-ghost-dark:hover { background: rgba(255,255,255,.18); }
 
 /* ── FAQ ── */
 .faq-list { margin-top: 44px; display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
