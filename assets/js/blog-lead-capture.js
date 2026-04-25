@@ -157,19 +157,19 @@
       }
       .lcf-btn:hover { opacity: .9; transform: translateY(-1px); }
 
-      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, ONLY ON BLOG CONTENT) ── */
+      /* ── 1. FIXED SIDEBAR (TOP-RIGHT, STATIC ON DESKTOP) ── */
       #lc-sidebar {
         position: fixed;
-        top: 80px;
-        right: 20px;
-        width: 300px;
+        top: 100px;
+        right: 40px;
+        width: 320px;
         background: #0A1628;
         border: 1px solid rgba(255,255,255,.1);
         border-radius: 16px;
-        padding: 22px 20px;
+        padding: 24px;
         z-index: 90;
         box-shadow: 0 8px 40px rgba(0,0,0,.3);
-        max-height: calc(100vh - 120px);
+        max-height: calc(100vh - 140px);
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
@@ -187,50 +187,6 @@
         opacity: 0;
         pointer-events: none;
         display: block !important;
-      }
-
-      /* ── TOGGLE BUTTON (appears when sidebar closed) ── */
-      #lc-toggle-btn {
-        position: fixed;
-        right: 20px;
-        top: 80px;
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #2164F3, #7C3AED);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        z-index: 89;
-        font-size: 1.3rem;
-        font-weight: 700;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 24px rgba(33, 100, 243, 0.4);
-        transition: opacity .3s ease-in-out;
-        opacity: 0;
-        pointer-events: none;
-        animation: lc-pulse 2s ease-in-out infinite;
-      }
-      #lc-toggle-btn.lc-visible {
-        display: flex;
-        opacity: 1;
-        pointer-events: all;
-      }
-      #lc-toggle-btn:hover {
-        animation: none;
-        transform: scale(1.1);
-      }
-      @keyframes lc-pulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 8px 24px rgba(33, 100, 243, 0.4);
-        }
-        50% {
-          transform: scale(1.15);
-          box-shadow: 0 8px 40px rgba(33, 100, 243, 0.8);
-        }
       }
       .lc-sidebar-head { margin-bottom: 14px; }
       .lc-sidebar-head h4 {
@@ -348,11 +304,24 @@
 
       /* ── RESPONSIVE ── */
       @media (min-width: 900px) {
-        #lc-sidebar { display: block; }
+        #lc-sidebar { 
+          display: block !important;
+          right: 40px;
+          width: 320px;
+        }
+        #lc-sidebar .lc-close { display: none !important; }
         #lc-mobile-bar { display: none !important; }
       }
       @media (max-width: 899px) {
-        #lc-sidebar { display: none !important; }
+        #lc-sidebar { 
+          position: fixed;
+          bottom: auto;
+          top: auto;
+          right: 20px;
+          width: 90vw;
+          max-width: 340px;
+        }
+        #lc-sidebar .lc-close { display: block !important; }
         #lc-mobile-bar { display: block; }
         .lcf-row { grid-template-columns: 1fr; }
       }
@@ -369,7 +338,7 @@
     var sidebar = document.createElement('div');
     sidebar.id  = 'lc-sidebar';
     sidebar.innerHTML =
-      '<button class="lc-close" id="lc-sidebar-close" aria-label="Close">×</button>' +
+      '<button class="lc-close" id="lc-sidebar-close" aria-label="Close" style="display:none;">×</button>' +
       '<div class="lc-sidebar-head">' +
         '<h4>🎯 Get Interview Calls Faster</h4>' +
         '<p>Free 30-min call. We\'ll diagnose your job search and tell you exactly what to fix.</p>' +
@@ -380,66 +349,42 @@
     document.body.appendChild(sidebar);
     console.log('[LC] Sidebar created and appended to body', sidebar);
 
-    // Create toggle button
-    var toggleBtn = document.createElement('button');
-    toggleBtn.id = 'lc-toggle-btn';
-    toggleBtn.textContent = '📞';
-    toggleBtn.setAttribute('aria-label', 'Open lead form');
-    document.body.appendChild(toggleBtn);
-    console.log('[LC] Toggle button created', toggleBtn);
+    var closeBtn = document.getElementById('lc-sidebar-close');
 
-    // Close button hides sidebar and shows toggle button
-    document.getElementById('lc-sidebar-close').addEventListener('click', function () {
-      console.log('[LC] Close button clicked');
-      sidebar.classList.add('lc-hidden');
-      toggleBtn.classList.add('lc-visible');
-    });
-
-    // Toggle button opens sidebar
-    toggleBtn.addEventListener('click', function () {
-      console.log('[LC] Toggle button clicked');
-      sidebar.classList.remove('lc-hidden');
-      toggleBtn.classList.remove('lc-visible');
-    });
-
-    // Show/hide sidebar based on scroll depth (30%-80%)
-    var footer = document.querySelector('footer');
-
+    // Desktop: always visible, no close button
+    // Mobile: show after 40% scroll, with close button
     function updateSidebarVisibility() {
       if (alreadySubmitted()) {
         sidebar.classList.remove('lc-visible');
-        toggleBtn.classList.remove('lc-visible');
         return;
       }
 
-      // Calculate scroll percentage
+      var isDesktop = window.innerWidth >= 900;
       var scrollY = window.scrollY;
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
       var scrollPercent = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
 
-      var isClosed = sidebar.classList.contains('lc-hidden');
-
-      console.log('[LC] Scroll depth:', scrollPercent.toFixed(1) + '%', 'isClosed:', isClosed);
-
-      // Show sidebar/toggle only between 30%-80% scroll depth
-      var inRange = scrollPercent >= 30 && scrollPercent <= 80;
-
-      if (inRange && !isClosed) {
-        // Show form, hide toggle
+      if (isDesktop) {
+        // Desktop: always show sidebar, no close button
         sidebar.classList.add('lc-visible');
-        toggleBtn.classList.remove('lc-visible');
-      } else if (inRange && isClosed) {
-        // Show toggle, hide form
-        sidebar.classList.remove('lc-visible');
-        toggleBtn.classList.add('lc-visible');
+        closeBtn.style.display = 'none';
       } else {
-        // Hide both when outside 30%-80% range
-        sidebar.classList.remove('lc-visible');
-        toggleBtn.classList.remove('lc-visible');
+        // Mobile: show after 40% scroll, with close button
+        if (scrollPercent >= 40 && !sidebar.classList.contains('lc-hidden')) {
+          sidebar.classList.add('lc-visible');
+          closeBtn.style.display = 'block';
+        } else if (scrollPercent < 40 || sidebar.classList.contains('lc-hidden')) {
+          sidebar.classList.remove('lc-visible');
+        }
       }
     }
 
-    // Initial check after page loads
+    // Close button (mobile only)
+    closeBtn.addEventListener('click', function () {
+      sidebar.classList.add('lc-hidden');
+    });
+
+    // Initial check
     setTimeout(updateSidebarVisibility, 200);
 
     // Monitor scroll and resize
