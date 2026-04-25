@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Chances Calculator – TalentBuddy</title>
+  <meta name="description" content="Check your chances of getting interview calls in 30 seconds. Free tool by TalentBuddy — India's job placement services partner.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    /* ── PAGE LAYOUT ── */
+    .calc-page {
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 60px 5% 100px;
+    }
+    .calc-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    .calc-header { text-align: center; margin-bottom: 48px; }
+    .calc-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-l); color: var(--blue);
+      font-size: .72rem; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; padding: 6px 14px;
+      border-radius: 100px; margin-bottom: 16px;
+    }
+    .calc-header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800; color: var(--text);
+      line-height: 1.15; letter-spacing: -.4px;
+      margin-bottom: 14px;
+    }
+    .calc-header h1 span { color: var(--blue); }
+    .calc-header p { color: var(--muted); font-size: .95rem; line-height: 1.7; max-width: 500px; margin: 0 auto; }
+
+    /* ── STEPS INDICATOR ── */
+    .calc-steps {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 40px;
+    }
+    .calc-step {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      position: relative;
+    }
+    .calc-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 18px; left: calc(50% + 18px);
+      width: calc(100% - 4px); height: 2px;
+      background: var(--border);
+      transition: background .4s;
+    }
+    .calc-step.done:not(:last-child)::after { background: var(--blue); }
+    .step-dot {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--border); color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sora', sans-serif; font-size: .75rem; font-weight: 700;
+      transition: all .3s; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .calc-step.active .step-dot { background: var(--blue); color: white; box-shadow: 0 0 0 4px rgba(33,100,243,.15); }
+    .calc-step.done .step-dot { background: var(--green); color: white; }
+    .step-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .calc-step.active .step-lbl, .calc-step.done .step-lbl { color: var(--blue); }
+
+    /* ── CARD ── */
+    .calc-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.05);
+    }
+
+    /* ── QUESTIONS ── */
+    .calc-section { display: none; }
+    .calc-section.active { display: block; }
+
+    .q-label {
+      font-family: 'Sora', sans-serif;
+      font-size: .78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: var(--blue); margin-bottom: 6px;
+    }
+    .q-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      color: var(--text); margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    /* Option grid */
+    .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .q-opt {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex; align-items: flex-start; gap: 12px;
+      background: white;
+      text-align: left;
+    }
+    .q-opt:hover { border-color: var(--blue); background: var(--blue-l); }
+    .q-opt.selected { border-color: var(--blue); background: var(--blue-l); }
+    .q-opt.selected .opt-dot { background: var(--blue); border-color: var(--blue); }
+    .q-opt.selected .opt-dot::after { opacity: 1; }
+    .opt-dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid var(--border); flex-shrink: 0;
+      margin-top: 2px; position: relative; transition: all .2s;
+      background: white;
+    }
+    .opt-dot::after {
+      content: '';
+      position: absolute; inset: 3px;
+      border-radius: 50%; background: white;
+      opacity: 0; transition: opacity .2s;
+    }
+    .opt-title { font-family: 'Sora', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); }
+    .opt-sub { font-size: .74rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+    /* Progress bar */
+    .q-progress { margin-bottom: 24px; }
+    .q-progress-bar { height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+    .q-progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent, #7C3AED)); border-radius: 100px; transition: width .4s ease; }
+    .q-progress-text { font-size: .7rem; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+
+    /* Navigation */
+    .q-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .btn-prev {
+      padding: 12px 24px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: white;
+      font-family: 'Sora', sans-serif; font-weight: 600;
+      font-size: .88rem; color: var(--muted); cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-prev:hover { border-color: var(--blue); color: var(--blue); }
+    .btn-next {
+      padding: 12px 28px; border-radius: 10px;
+      background: var(--blue); color: white;
+      font-family: 'Sora', sans-serif; font-weight: 700;
+      font-size: .88rem; cursor: pointer; border: none;
+      transition: all .2s; display: flex; align-items: center; gap: 8px;
+      flex: 1; justify-content: center;
+    }
+    .btn-next:hover { background: var(--blue-d); transform: translateY(-1px); }
+    .btn-next:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    /* ── LEAD CAPTURE STEP ── */
+    .lead-intro { text-align: center; margin-bottom: 28px; }
+    .lead-intro .score-preview {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), #7C3AED);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; margin: 0 auto 16px;
+      box-shadow: 0 8px 32px rgba(33,100,243,.3);
+    }
+    .score-preview .sp-lock { font-size: 1.6rem; }
+    .lead-intro h3 {
+      font-family: 'Sora', sans-serif; font-size: 1.2rem;
+      font-weight: 800; color: var(--text); margin-bottom: 6px;
+    }
+    .lead-intro p { color: var(--muted); font-size: .88rem; line-height: 1.6; }
+
+    .lead-form .lf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lf-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .lf-group label { font-size: .74rem; font-weight: 600; color: var(--text); }
+    .lf-group input {
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: .88rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: white;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+    }
+    .lf-group input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(33,100,243,.1); }
+    .lf-required { color: var(--orange); }
+
+    .btn-reveal {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--blue), #7C3AED);
+      color: white; border: none; border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-weight: 700;
+      font-size: .95rem; cursor: pointer;
+      transition: all .2s; margin-top: 4px;
+      box-shadow: 0 6px 24px rgba(33,100,243,.3);
+    }
+    .btn-reveal:hover { opacity: .92; transform: translateY(-2px); }
+    .btn-reveal:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .lead-disclaimer { text-align: center; font-size: .7rem; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+    /* ── RESULTS ── */
+    #calc-result { display: none; }
+
+    .result-score-wrap { text-align: center; padding: 36px 0 28px; }
+    .result-score-ring {
+      position: relative; width: 140px; height: 140px;
+      margin: 0 auto 20px;
+    }
+    .result-score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+    .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1); }
+    .ring-fill.low  { stroke: #EF4444; }
+    .ring-fill.mid  { stroke: #F59E0B; }
+    .ring-fill.high { stroke: #10B981; }
+    .ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .ring-number {
+      font-family: 'Sora', sans-serif; font-size: 2rem;
+      font-weight: 800; line-height: 1;
+    }
+    .ring-number.low  { color: #EF4444; }
+    .ring-number.mid  { color: #F59E0B; }
+    .ring-number.high { color: #10B981; }
+    .ring-label { font-size: .65rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+    .result-headline {
+      font-family: 'Sora', sans-serif; font-size: 1.3rem;
+      font-weight: 800; color: var(--text);
+      margin-bottom: 6px; line-height: 1.3;
+    }
+    .result-sub { color: var(--muted); font-size: .88rem; line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+    /* Result band pill */
+    .result-band {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px; border-radius: 100px;
+      font-family: 'Sora', sans-serif; font-size: .72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 12px;
+    }
+    .result-band.low  { background: #FEE2E2; color: #DC2626; }
+    .result-band.mid  { background: #FEF3C7; color: #D97706; }
+    .result-band.high { background: #D1FAE5; color: #059669; }
+    .result-band::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* Insights */
+    .result-insights { margin: 28px 0; }
+    .insights-title {
+      font-family: 'Sora', sans-serif; font-size: .78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: var(--muted); margin-bottom: 14px;
+    }
+    .insight-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px; border-radius: 12px;
+      background: var(--bg); margin-bottom: 10px;
+      border-left: 3px solid transparent;
+    }
+    .insight-item.warn { border-left-color: #F59E0B; background: #FFFBEB; }
+    .insight-item.danger { border-left-color: #EF4444; background: #FEF2F2; }
+    .insight-item.tip { border-left-color: var(--blue); background: var(--blue-l); }
+    .insight-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .insight-text { font-size: .84rem; color: var(--text); line-height: 1.6; }
+    .insight-text strong { font-weight: 700; }
+
+    /* CTA */
+    .result-cta {
+      background: var(--navy); border-radius: 16px;
+      padding: 28px; text-align: center; margin-top: 8px;
+    }
+    .result-cta h4 {
+      font-family: 'Sora', sans-serif; font-size: 1rem;
+      font-weight: 800; color: white; margin-bottom: 6px;
+    }
+    .result-cta p { color: rgba(255,255,255,.55); font-size: .82rem; margin-bottom: 18px; line-height: 1.55; }
+    .result-cta .btn-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue); color: white;
+      padding: 14px 28px; border-radius: 10px;
+      font-family: 'Sora', sans-serif; font-weight: 700;
+      font-size: .9rem; text-decoration: none;
+      transition: all .2s; border: none; cursor: pointer;
+    }
+    .result-cta .btn-cta:hover { background: var(--blue-d); transform: translateY(-2px); }
+    .result-cta .cta-sub { color: rgba(255,255,255,.4); font-size: .72rem; margin-top: 10px; }
+
+    .btn-retake {
+      display: block; width: 100%; margin-top: 12px;
+      background: none; border: 1.5px solid rgba(255,255,255,.15);
+      color: rgba(255,255,255,.5); padding: 12px;
+      border-radius: 10px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: .84rem;
+      transition: all .2s;
+    }
+    .btn-retake:hover { border-color: rgba(255,255,255,.4); color: rgba(255,255,255,.8); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .calc-page { padding: 40px 4% 80px; }
+      .calc-card { padding: 24px 20px; }
+      .q-options { grid-template-columns: 1fr; }
+      .lead-form .lf-row { grid-template-columns: 1fr; }
+      .calc-steps { gap: 0; }
+      .step-lbl { display: none; }
+      .calc-step:not(:last-child)::after { width: calc(100% + 8px); left: calc(50% + 22px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV (reuse site nav) -->
+<nav aria-label="Main navigation">
+  <a href="/" class="logo" aria-label="TalentBuddy Home">
+    <img src="/assets/images/logo.png" alt="TalentBuddy Logo" class="logo-img"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="logo-fallback">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <span class="logo-text"><span>Talent</span>Buddy</span>
+    </div>
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="/#process">How It Works</a></li>
+    <li><a href="/#transparency">Ethical Guidance</a></li>
+    <li><a href="/#tracking">Live Tracking</a></li>
+    <li><a href="/#success">Success Stories</a></li>
+    <li><a href="/#promise">Our Promise</a></li>
+    <li><a href="/#testimonials">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/blog/" class="nav-blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Blog</a>
+    <a href="tel:+919980291663" class="nav-cta">📞 Book a Free Call</a>
+  </div>
+  <button class="hbg" onclick="toggleNav()" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+<div class="mnav" id="mnav">
+  <a href="/#process" onclick="closeNav()">How It Works</a>
+  <a href="/#transparency" onclick="closeNav()">Ethical Guidance</a>
+  <a href="/#tracking" onclick="closeNav()">Live Tracking</a>
+  <a href="/#success" onclick="closeNav()">Success Stories</a>
+  <a href="/#promise" onclick="closeNav()">Our Promise</a>
+  <a href="/#testimonials" onclick="closeNav()">Reviews</a>
+  <a href="/blog/" onclick="closeNav()" class="mblog">📖 Blog</a>
+  <a href="tel:+919980291663" class="mcta" onclick="closeNav()">📞 Book Free Discovery Call</a>
+</div>
+
+
+<!-- CALCULATOR PAGE -->
+<main class="calc-page">
+  <div class="calc-wrap">
+
+    <!-- Header -->
+    <div class="calc-header">
+      <div class="calc-eyebrow">⚡ Free Tool</div>
+      <h1>Check Your <span>Interview Chances</span><br>in 30 Seconds</h1>
+      <p>Answer 6 quick questions and find out why you're not getting interview calls — and what to do about it.</p>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="calc-steps" id="calcSteps">
+      <div class="calc-step active" data-step="1"><div class="step-dot">1</div><div class="step-lbl">Experience</div></div>
+      <div class="calc-step" data-step="2"><div class="step-dot">2</div><div class="step-lbl">Target</div></div>
+      <div class="calc-step" data-step="3"><div class="step-dot">3</div><div class="step-lbl">Resume</div></div>
+      <div class="calc-step" data-step="4"><div class="step-dot">4</div><div class="step-lbl">Applications</div></div>
+      <div class="calc-step" data-step="5"><div class="step-dot">5</div><div class="step-lbl">Platforms</div></div>
+      <div class="calc-step" data-step="6"><div class="step-dot">6</div><div class="step-lbl">Outreach</div></div>
+      <div class="calc-step" data-step="7"><div class="step-dot">→</div><div class="step-lbl">Result</div></div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="calc-card" id="calcCard">
+
+      <!-- Q1: Experience -->
+      <div class="calc-section active" data-section="1">
+        <div class="q-progress"><div class="q-progress-text">Question 1 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:16%"></div></div></div>
+        <div class="q-label">Step 1</div>
+        <div class="q-title">What's your work experience level?</div>
+        <div class="q-options">
+          <div class="q-opt" data-q="1" data-val="10" data-label="Fresher" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Fresher</div><div class="opt-sub">0–1 years of experience</div></div></div>
+          <div class="q-opt" data-q="1" data-val="20" data-label="1–3 years" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">1–3 Years</div><div class="opt-sub">Early career professional</div></div></div>
+          <div class="q-opt" data-q="1" data-val="25" data-label="3–5 years" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">3–5 Years</div><div class="opt-sub">Mid-level professional</div></div></div>
+          <div class="q-opt" data-q="1" data-val="30" data-label="5+ years" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">5+ Years</div><div class="opt-sub">Senior professional</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-next" id="next1" onclick="nextStep(1)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Q2: Target -->
+      <div class="calc-section" data-section="2">
+        <div class="q-progress"><div class="q-progress-text">Question 2 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:33%"></div></div></div>
+        <div class="q-label">Step 2</div>
+        <div class="q-title">Where are you applying for jobs?</div>
+        <div class="q-options" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="q-opt" data-q="2" data-val="10" data-label="India" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">🇮🇳 India Only</div><div class="opt-sub">Domestic roles</div></div></div>
+          <div class="q-opt" data-q="2" data-val="5" data-label="Abroad" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">🌍 Abroad Only</div><div class="opt-sub">International roles</div></div></div>
+          <div class="q-opt" data-q="2" data-val="8" data-label="Both" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">🌐 Both</div><div class="opt-sub">India + International</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-prev" onclick="prevStep(2)">← Back</button>
+          <button class="btn-next" id="next2" onclick="nextStep(2)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Q3: Resume -->
+      <div class="calc-section" data-section="3">
+        <div class="q-progress"><div class="q-progress-text">Question 3 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:50%"></div></div></div>
+        <div class="q-label">Step 3</div>
+        <div class="q-title">How would you rate your resume quality?</div>
+        <div class="q-options">
+          <div class="q-opt" data-q="3" data-val="5" data-label="Not sure" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Not Sure</div><div class="opt-sub">Haven't checked ATS compatibility</div></div></div>
+          <div class="q-opt" data-q="3" data-val="10" data-label="Basic" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Basic</div><div class="opt-sub">Just responsibilities listed</div></div></div>
+          <div class="q-opt" data-q="3" data-val="20" data-label="Good" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Good</div><div class="opt-sub">Has projects + skills section</div></div></div>
+          <div class="q-opt" data-q="3" data-val="30" data-label="Strong" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Strong</div><div class="opt-sub">Metrics, keywords, ATS-optimized</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-prev" onclick="prevStep(3)">← Back</button>
+          <button class="btn-next" id="next3" onclick="nextStep(3)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Q4: Applications -->
+      <div class="calc-section" data-section="4">
+        <div class="q-progress"><div class="q-progress-text">Question 4 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:66%"></div></div></div>
+        <div class="q-label">Step 4</div>
+        <div class="q-title">How many applications do you send per week?</div>
+        <div class="q-options">
+          <div class="q-opt" data-q="4" data-val="5" data-label="0–10 apps" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">0–10</div><div class="opt-sub">Very low volume</div></div></div>
+          <div class="q-opt" data-q="4" data-val="15" data-label="10–25 apps" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">10–25</div><div class="opt-sub">Moderate volume</div></div></div>
+          <div class="q-opt" data-q="4" data-val="20" data-label="25–50 apps" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">25–50</div><div class="opt-sub">High volume</div></div></div>
+          <div class="q-opt" data-q="4" data-val="25" data-label="50+ apps" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">50+</div><div class="opt-sub">Very high — mass applying</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-prev" onclick="prevStep(4)">← Back</button>
+          <button class="btn-next" id="next4" onclick="nextStep(4)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Q5: Platforms -->
+      <div class="calc-section" data-section="5">
+        <div class="q-progress"><div class="q-progress-text">Question 5 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:83%"></div></div></div>
+        <div class="q-label">Step 5</div>
+        <div class="q-title">How many job platforms do you use?</div>
+        <div class="q-options" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="q-opt" data-q="5" data-val="5" data-label="1 platform" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Just 1</div><div class="opt-sub">Only Naukri or LinkedIn</div></div></div>
+          <div class="q-opt" data-q="5" data-val="10" data-label="2–3 platforms" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">2–3</div><div class="opt-sub">A few platforms</div></div></div>
+          <div class="q-opt" data-q="5" data-val="15" data-label="4+ platforms" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">4+</div><div class="opt-sub">Multi-platform approach</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-prev" onclick="prevStep(5)">← Back</button>
+          <button class="btn-next" id="next5" onclick="nextStep(5)" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Q6: Outreach -->
+      <div class="calc-section" data-section="6">
+        <div class="q-progress"><div class="q-progress-text">Question 6 of 6</div><div class="q-progress-bar"><div class="q-progress-fill" style="width:100%"></div></div></div>
+        <div class="q-label">Step 6</div>
+        <div class="q-title">How often do you reach out to recruiters directly?</div>
+        <div class="q-options">
+          <div class="q-opt" data-q="6" data-val="0" data-label="No outreach" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Never</div><div class="opt-sub">I only apply on portals</div></div></div>
+          <div class="q-opt" data-q="6" data-val="10" data-label="Occasional outreach" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Occasionally</div><div class="opt-sub">Message recruiters sometimes</div></div></div>
+          <div class="q-opt" data-q="6" data-val="20" data-label="Regular outreach" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Regularly</div><div class="opt-sub">Weekly outreach to recruiters</div></div></div>
+          <div class="q-opt" data-q="6" data-val="25" data-label="Active networking" onclick="selectOpt(this)"><div class="opt-dot"></div><div><div class="opt-title">Active</div><div class="opt-sub">Networking + referrals too</div></div></div>
+        </div>
+        <div class="q-nav">
+          <button class="btn-prev" onclick="prevStep(6)">← Back</button>
+          <button class="btn-next" id="next6" onclick="nextStep(6)" disabled>Calculate My Chances 🎯</button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Lead Capture (gates the result) -->
+      <div class="calc-section" data-section="7">
+        <div class="lead-intro">
+          <div class="score-preview"><div class="sp-lock">🔒</div></div>
+          <h3>Your score is ready!</h3>
+          <p>Enter your details to unlock your personalised interview chances score and get specific recommendations.</p>
+        </div>
+        <div class="lead-form">
+          <div class="lf-row">
+            <div class="lf-group"><label>First Name</label><input id="lf_fname" type="text" placeholder="Rahul" autocomplete="given-name"></div>
+            <div class="lf-group"><label>Last Name</label><input id="lf_lname" type="text" placeholder="Kumar" autocomplete="family-name"></div>
+          </div>
+          <div class="lf-group"><label>Phone / WhatsApp <span class="lf-required">*</span></label><input id="lf_phone" type="tel" placeholder="+91 XXXXX XXXXX" required autocomplete="tel"></div>
+          <div class="lf-group"><label>Email Address</label><input id="lf_email" type="email" placeholder="rahul@email.com" autocomplete="email"></div>
+          <button class="btn-reveal" id="btnReveal" onclick="revealResult()">🎯 Reveal My Score</button>
+          <div class="lead-disclaimer">We'll also send you a free personalised job search tip. No spam, ever.</div>
+        </div>
+        <div style="margin-top:16px;text-align:center">
+          <button class="btn-prev" onclick="prevStep(7)">← Back to questions</button>
+        </div>
+      </div>
+
+    </div><!-- /calc-card -->
+
+    <!-- RESULT (shown below card after form submit) -->
+    <div id="calc-result">
+      <div class="calc-card" style="margin-top:24px">
+
+        <div class="result-score-wrap">
+          <div id="resultBand" class="result-band"></div>
+          <div class="result-score-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="52"
+                      stroke-dasharray="326.7"
+                      stroke-dashoffset="326.7"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-number" id="ringNumber">0</div>
+              <div class="ring-label">/ 100</div>
+            </div>
+          </div>
+          <div id="resultHeadline" class="result-headline"></div>
+          <div id="resultSub" class="result-sub"></div>
+        </div>
+
+        <div class="result-insights">
+          <div class="insights-title">Your Personalised Insights</div>
+          <div id="insightsList"></div>
+        </div>
+
+        <div class="result-cta">
+          <h4 id="ctaHeadline">Let us fix this — free 30-min call</h4>
+          <p id="ctaSub">We'll diagnose exactly what's blocking your interview calls and give you a clear action plan.</p>
+          <a href="tel:+919980291663" class="btn-cta">
+            <svg style="width:15px;height:15px;fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81 19.79 19.79 0 01.1 2.18 2 2 0 012.1 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Book My Free Diagnosis Call
+          </a>
+          <div class="cta-sub">No commitment · Honest advice · Takes 30 minutes</div>
+          <button class="btn-retake" onclick="retakeCalc()">↺ Retake the calculator</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /calc-wrap -->
+</main>
+
+
+<a href="https://wa.me/919980291663" class="waf" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp with TalentBuddy">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+</a>
+
+<script src="/assets/js/main.js" defer></script>
+<script>
+/* ── CALCULATOR STATE ── */
+var answers = {}; // { q: { val, label } }
+var currentStep = 1;
+var finalScore = 0;
+
+var FORM_ID  = '1FAIpQLSeJyIisoTBEP-u1PPW5fAqgkXxGzgat1VsECyfKs9aBWbll8Q';
+var FORM_URL = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
+
+/* ── SELECT OPTION ── */
+function selectOpt(el) {
+  var q = el.dataset.q;
+  // Deselect siblings
+  document.querySelectorAll('[data-q="' + q + '"]').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  answers[q] = { val: parseInt(el.dataset.val), label: el.dataset.label };
+  // Enable next
+  var nextBtn = document.getElementById('next' + q);
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+/* ── NAVIGATION ── */
+function nextStep(from) {
+  if (!answers[from]) return;
+  showSection(from + 1);
+  currentStep = from + 1;
+  updateSteps();
+}
+
+function prevStep(from) {
+  showSection(from - 1);
+  currentStep = from - 1;
+  updateSteps();
+}
+
+function showSection(n) {
+  document.querySelectorAll('.calc-section').forEach(function(s) { s.classList.remove('active'); });
+  var sec = document.querySelector('[data-section="' + n + '"]');
+  if (sec) { sec.classList.add('active'); sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function updateSteps() {
+  document.querySelectorAll('.calc-step').forEach(function(s) {
+    var n = parseInt(s.dataset.step);
+    s.classList.remove('active', 'done');
+    if (n < currentStep) s.classList.add('done');
+    else if (n === currentStep) s.classList.add('active');
+  });
+}
+
+/* ── SCORING ── */
+function calcScore() {
+  var raw = 0;
+  for (var q in answers) raw += answers[q].val;
+  return Math.round((raw / 135) * 100);
+}
+
+/* ── REVEAL RESULT ── */
+function revealResult() {
+  var phone = document.getElementById('lf_phone').value.trim();
+  if (!phone) {
+    document.getElementById('lf_phone').style.borderColor = '#EF4444';
+    document.getElementById('lf_phone').focus();
+    return;
+  }
+
+  var btn = document.getElementById('btnReveal');
+  btn.textContent = 'Calculating…';
+  btn.disabled = true;
+
+  // Submit to Google Forms
+  var params = new URLSearchParams({
+    'entry.57553000'  : document.getElementById('lf_fname').value.trim(),
+    'entry.201510226' : document.getElementById('lf_lname').value.trim(),
+    'entry.723918717' : phone,
+    'entry.920695701' : document.getElementById('lf_email').value.trim(),
+    'entry.65541856'  : 'Calculator Tool — ' + buildAnswerSummary(),
+    'entry.1628514649': ''
+  });
+
+  fetch(FORM_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() })
+    .finally(function() { showResult(); });
+}
+
+function buildAnswerSummary() {
+  return Object.keys(answers).map(function(q) { return answers[q].label; }).join(' | ');
+}
+
+/* ── SHOW RESULT ── */
+function showResult() {
+  finalScore = calcScore();
+  var band = finalScore <= 40 ? 'low' : finalScore <= 70 ? 'mid' : 'high';
+
+  // Hide calc card, show result
+  document.getElementById('calcCard').style.display = 'none';
+  document.querySelector('.calc-steps').style.display = 'none';
+  var result = document.getElementById('calc-result');
+  result.style.display = 'block';
+
+  // Band pill
+  var bandEl = document.getElementById('resultBand');
+  var bandLabels = { low: '🔴 Low Chances', mid: '🟡 Medium Chances', high: '🟢 High Chances' };
+  bandEl.className = 'result-band ' + band;
+  bandEl.innerHTML = bandLabels[band];
+
+  // Animate score ring
+  var ring = document.getElementById('ringFill');
+  var numEl = document.getElementById('ringNumber');
+  ring.className = 'ring-fill ' + band;
+  var circumference = 326.7;
+  var offset = circumference - (finalScore / 100) * circumference;
+  setTimeout(function() {
+    ring.style.strokeDashoffset = offset;
+    var start = 0;
+    var duration = 1200;
+    var startTime = null;
+    function animateNum(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      numEl.textContent = Math.round(progress * finalScore);
+      if (progress < 1) requestAnimationFrame(animateNum);
+    }
+    requestAnimationFrame(animateNum);
+  }, 100);
+  numEl.className = 'ring-number ' + band;
+
+  // Headlines
+  var headlines = {
+    low:  'Your chances of getting interview calls are LOW',
+    mid:  'You\'re close — but missing key opportunities',
+    high: 'You\'re doing well — but leaving opportunities on the table'
+  };
+  var subs = {
+    low:  'Your profile is likely getting filtered out before reaching recruiters. The good news — this is fixable.',
+    mid:  'You should be getting more interview calls than you currently are. A few targeted changes can make a big difference.',
+    high: 'With the right strategy, you can 2–3x your interview calls. Let\'s close those gaps.'
+  };
+  document.getElementById('resultHeadline').textContent = headlines[band];
+  document.getElementById('resultSub').textContent = subs[band];
+
+  // CTA
+  var ctaHeadlines = {
+    low:  'Let us fix this — free 30-min call',
+    mid:  'Increase your interview rate — talk to us',
+    high: 'Maximise your results — get expert help'
+  };
+  document.getElementById('ctaHeadline').textContent = ctaHeadlines[band];
+
+  // Dynamic insights
+  var insights = [];
+
+  // Resume insight
+  if (answers[3] && answers[3].label === 'Not sure') {
+    insights.push({ type: 'danger', icon: '⚠️', text: '<strong>Your resume is likely failing ATS filters.</strong> Over 75% of CVs are auto-rejected before a recruiter ever sees them. An ATS-optimised CV is non-negotiable.' });
+  } else if (answers[3] && answers[3].label === 'Basic') {
+    insights.push({ type: 'warn', icon: '📄', text: '<strong>Your resume needs keyword optimisation.</strong> A basic resume with just responsibilities gets filtered. Add metrics, impact statements, and role-specific keywords.' });
+  }
+
+  // Outreach insight
+  if (answers[6] && answers[6].label === 'No outreach') {
+    insights.push({ type: 'danger', icon: '🔍', text: '<strong>You\'re missing 70% of job opportunities.</strong> Most roles are filled through the hidden job market — direct recruiter outreach, referrals, and networks. Apply-and-wait is not a strategy.' });
+  } else if (answers[6] && answers[6].label === 'Occasional outreach') {
+    insights.push({ type: 'warn', icon: '📨', text: '<strong>Your recruiter outreach is inconsistent.</strong> Occasional messages don\'t build relationships. Regular, targeted outreach to recruiters in your domain can 2x your visibility.' });
+  }
+
+  // Abroad insight
+  if (answers[2] && (answers[2].label === 'Abroad' || answers[2].label === 'Both')) {
+    insights.push({ type: 'tip', icon: '✈️', text: '<strong>Global roles require a different approach.</strong> International applications need a globally-formatted CV, overseas recruiter outreach, and visa awareness. We cover all of this.' });
+  }
+
+  // Applications insight
+  if (answers[4] && answers[4].val <= 5) {
+    insights.push({ type: 'warn', icon: '📉', text: '<strong>Your application volume is very low.</strong> At 0–10 apps/week, you\'re limiting your pipeline significantly. Combined with a better strategy, volume matters.' });
+  }
+
+  // Platforms insight
+  if (answers[5] && answers[5].val <= 5) {
+    insights.push({ type: 'tip', icon: '🌐', text: '<strong>You\'re only using one job platform.</strong> Naukri and LinkedIn together reach less than 40% of available roles. Expand to direct company portals, sector-specific boards, and recruiter networks.' });
+  }
+
+  // Fresher insight
+  if (answers[1] && answers[1].label === 'Fresher') {
+    insights.push({ type: 'tip', icon: '🎓', text: '<strong>As a fresher, positioning is everything.</strong> You need a CV that highlights projects, skills, and learning — not just a degree. We specialise in fresher placement strategy.' });
+  }
+
+  // Generic insight if nothing specific triggered
+  if (insights.length === 0) {
+    insights.push({ type: 'tip', icon: '💡', text: '<strong>Even strong profiles leave interview calls on the table.</strong> A professional strategy review often unlocks 2–3x more callbacks within weeks.' });
+  }
+
+  var list = document.getElementById('insightsList');
+  list.innerHTML = '';
+  insights.forEach(function(ins) {
+    list.innerHTML += '<div class="insight-item ' + ins.type + '"><div class="insight-icon">' + ins.icon + '</div><div class="insight-text">' + ins.text + '</div></div>';
+  });
+
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── RETAKE ── */
+function retakeCalc() {
+  answers = {};
+  currentStep = 1;
+  finalScore = 0;
+  document.querySelectorAll('.q-opt').forEach(function(o) { o.classList.remove('selected'); });
+  document.querySelectorAll('.btn-next').forEach(function(b) { b.disabled = true; });
+  document.getElementById('lf_fname').value = '';
+  document.getElementById('lf_lname').value = '';
+  document.getElementById('lf_phone').value = '';
+  document.getElementById('lf_email').value = '';
+  document.getElementById('btnReveal').textContent = '🎯 Reveal My Score';
+  document.getElementById('btnReveal').disabled = false;
+  document.getElementById('calc-result').style.display = 'none';
+  document.getElementById('calcCard').style.display = 'block';
+  document.querySelector('.calc-steps').style.display = 'flex';
+  showSection(1);
+  updateSteps();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
