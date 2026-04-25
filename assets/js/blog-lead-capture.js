@@ -303,6 +303,81 @@
         opacity: .95;
       }
 
+      /* ── SUCCESS STORIES CAROUSEL ── */
+      .lc-success-stories {
+        margin-bottom: 24px;
+      }
+      .lc-stories-carousel {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(0,0,0,.2);
+        margin-bottom: 16px;
+      }
+      .lc-story-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity .4s ease-in-out;
+      }
+      .lc-story-img.lc-story-active {
+        opacity: 1;
+      }
+      .lc-stories-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .lc-stories-btn {
+        background: rgba(255, 140, 60, .2);
+        color: #FFB366;
+        border: 1px solid rgba(255, 140, 60, .3);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all .2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lc-stories-btn:hover {
+        background: rgba(255, 140, 60, .4);
+        border-color: rgba(255, 140, 60, .6);
+      }
+      .lc-stories-dots {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        justify-content: center;
+      }
+      .lc-stories-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 140, 60, .3);
+        cursor: pointer;
+        transition: all .2s;
+      }
+      .lc-stories-dot.lc-dot-active {
+        background: #FFB366;
+        width: 24px;
+        border-radius: 4px;
+      }
+      .lc-stories-text {
+        text-align: center;
+        font-size: .82rem;
+        color: rgba(255, 200, 150, .7);
+        line-height: 1.5;
+      }
+
       /* ── RESPONSIVE ── */
       @media (min-width: 900px) {
         #lc-sidebar { 
@@ -410,11 +485,69 @@
         '<h3>Still Struggling to Get<br>Interview Calls?</h3>' +
         '<p>Book a free 30-min call. We\'ll diagnose your specific blockers and tell you exactly what to fix. Honest. No pressure.</p>' +
       '</div>' +
+      '<div class="lc-success-stories">' +
+        '<div class="lc-stories-carousel" id="lc-stories-carousel">' +
+          '<img src="/assets/images/success-stories/story-1.jpg" alt="Success Story 1" class="lc-story-img lc-story-active">' +
+          '<img src="/assets/images/success-stories/story-2.jpg" alt="Success Story 2" class="lc-story-img">' +
+          '<img src="/assets/images/success-stories/story-3.jpg" alt="Success Story 3" class="lc-story-img">' +
+          '<img src="/assets/images/success-stories/story-4.jpg" alt="Success Story 4" class="lc-story-img">' +
+          '<img src="/assets/images/success-stories/story-5.jpg" alt="Success Story 5" class="lc-story-img">' +
+          '<img src="/assets/images/success-stories/story-6.jpg" alt="Success Story 6" class="lc-story-img">' +
+        '</div>' +
+        '<div class="lc-stories-nav">' +
+          '<button class="lc-stories-btn lc-stories-prev" id="lc-stories-prev">❮</button>' +
+          '<div class="lc-stories-dots" id="lc-stories-dots"></div>' +
+          '<button class="lc-stories-btn lc-stories-next" id="lc-stories-next">❯</button>' +
+        '</div>' +
+        '<p class="lc-stories-text">Join 1000+ candidates who landed their dream jobs. Your story could be next!</p>' +
+      '</div>' +
       formFieldsHTML('ep', true) +
       '<button class="lcf-btn" onclick="lcSubmit(\'ep\', this)">Get My Free Discovery Call →</button>';
 
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
+
+    // Success Stories Carousel Logic
+    var storyImages = document.querySelectorAll('.lc-story-img');
+    var currentStoryIndex = 0;
+    var totalStories = storyImages.length;
+
+    // Create dots
+    var dotsContainer = document.getElementById('lc-stories-dots');
+    for (var i = 0; i < totalStories; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'lc-stories-dot' + (i === 0 ? ' lc-dot-active' : '');
+      dot.addEventListener('click', function(idx) {
+        return function() { goToStory(idx); };
+      }(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function showStory(index) {
+      storyImages.forEach(function(img) { img.classList.remove('lc-story-active'); });
+      document.querySelectorAll('.lc-stories-dot').forEach(function(dot) { dot.classList.remove('lc-dot-active'); });
+      
+      storyImages[index].classList.add('lc-story-active');
+      document.querySelectorAll('.lc-stories-dot')[index].classList.add('lc-dot-active');
+    }
+
+    function goToStory(index) {
+      currentStoryIndex = index;
+      showStory(currentStoryIndex);
+    }
+
+    function nextStory() {
+      currentStoryIndex = (currentStoryIndex + 1) % totalStories;
+      showStory(currentStoryIndex);
+    }
+
+    function prevStory() {
+      currentStoryIndex = (currentStoryIndex - 1 + totalStories) % totalStories;
+      showStory(currentStoryIndex);
+    }
+
+    document.getElementById('lc-stories-next').addEventListener('click', nextStory);
+    document.getElementById('lc-stories-prev').addEventListener('click', prevStory);
 
     function showPopup() {
       if (alreadySubmitted()) return;
