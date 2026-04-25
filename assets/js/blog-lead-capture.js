@@ -3,11 +3,13 @@
    File: assets/js/blog-lead-capture.js
    Include AFTER main.js on all blog article pages.
 
-   Renders 4 lead capture surfaces:
-   1. Fixed sidebar (top-right, NOT sticky/floating) (desktop ≥900px)
+   Renders 3 lead capture surfaces:
+   1. Fixed sidebar (top-right, visible only on blog content) (desktop ≥900px)
+      - Hides at hero section, shows on scroll past hero
+      - Fades out smoothly at footer
+      - When closed, shows animated pulse button to reopen
    2. Mobile bottom bar (< 900px) — collapses to a tab, expands on tap
-   3. Mid-article inline banner (injected after 3rd <h2> or 40% scroll)
-   4. Exit-intent popup (mouse leaves viewport upward on desktop;
+   3. Exit-intent popup (mouse leaves viewport upward on desktop;
                          30s timer fallback on mobile)
 
    All surfaces submit to the same Google Forms endpoint as homepage.
@@ -172,11 +174,60 @@
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,.15) transparent;
         transition: opacity .3s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+      }
+      #lc-sidebar.lc-visible {
         opacity: 1;
-        display: none;
+        pointer-events: all;
       }
       #lc-sidebar.lc-hidden { 
-        display: none !important;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ── TOGGLE BUTTON (appears when sidebar closed) ── */
+      #lc-toggle-btn {
+        position: fixed;
+        right: 20px;
+        top: 80px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #2164F3, #7C3AED);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 89;
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(33, 100, 243, 0.4);
+        transition: opacity .3s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+        animation: lc-pulse 2s ease-in-out infinite;
+      }
+      #lc-toggle-btn.lc-visible {
+        display: flex;
+        opacity: 1;
+        pointer-events: all;
+      }
+      #lc-toggle-btn:hover {
+        animation: none;
+        transform: scale(1.1);
+      }
+      @keyframes lc-pulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 8px 24px rgba(33, 100, 243, 0.4);
+        }
+        50% {
+          transform: scale(1.15);
+          box-shadow: 0 8px 40px rgba(33, 100, 243, 0.8);
+        }
       }
       .lc-sidebar-head { margin-bottom: 14px; }
       .lc-sidebar-head h4 {
@@ -245,45 +296,7 @@
       .lc-bar-body { padding: 0 20px 24px; }
       .lc-bar-body .lc-sidebar-head { display: none; }
 
-      /* ── 3. MID-ARTICLE BANNER ── */
-      .lc-mid-banner {
-        background: linear-gradient(135deg, #0A1628 0%, #1a2a4a 100%);
-        border: 1px solid rgba(33,100,243,.3);
-        border-radius: 16px;
-        padding: 28px 28px 24px;
-        margin: 40px 0;
-        position: relative;
-        overflow: hidden;
-      }
-      .lc-mid-banner::before {
-        content: '';
-        position: absolute;
-        top: -60px; right: -60px;
-        width: 200px; height: 200px;
-        background: radial-gradient(circle, rgba(124,58,237,.25) 0%, transparent 70%);
-        pointer-events: none;
-      }
-      .lc-mid-banner-head { margin-bottom: 18px; position: relative; z-index: 1; }
-      .lc-mid-banner-head .lc-eyebrow {
-        font-size: .68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .6px;
-        color: #C4B5FD;
-        margin-bottom: 6px;
-      }
-      .lc-mid-banner-head h3 {
-        font-family: 'Sora', sans-serif;
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: white;
-        line-height: 1.3;
-        margin-bottom: 5px;
-      }
-      .lc-mid-banner-head p { font-size: .82rem; color: rgba(255,255,255,.5); line-height: 1.55; }
-      .lc-mid-banner form { position: relative; z-index: 1; }
 
-      /* ── 4. EXIT-INTENT POPUP ── */
       #lc-overlay {
         position: fixed;
         inset: 0;
@@ -361,9 +374,23 @@
 
     document.body.appendChild(sidebar);
 
-    // Close button hides the sidebar (user can still see other forms)
+    // Create toggle button
+    var toggleBtn = document.createElement('button');
+    toggleBtn.id = 'lc-toggle-btn';
+    toggleBtn.textContent = '📞';
+    toggleBtn.setAttribute('aria-label', 'Open lead form');
+    document.body.appendChild(toggleBtn);
+
+    // Close button hides sidebar and shows toggle button
     document.getElementById('lc-sidebar-close').addEventListener('click', function () {
       sidebar.classList.add('lc-hidden');
+      toggleBtn.classList.add('lc-visible');
+    });
+
+    // Toggle button opens sidebar
+    toggleBtn.addEventListener('click', function () {
+      sidebar.classList.remove('lc-hidden');
+      toggleBtn.classList.remove('lc-visible');
     });
 
     // Show/hide sidebar based on blog content visibility
@@ -371,19 +398,30 @@
     var footer = document.querySelector('footer');
 
     function updateSidebarVisibility() {
-      if (alreadySubmitted() || sidebar.classList.contains('lc-hidden')) {
+      if (alreadySubmitted()) {
         sidebar.style.display = 'none';
+        toggleBtn.style.display = 'none';
         return;
       }
 
       var articleTop = article ? article.getBoundingClientRect().top : Infinity;
       var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
 
-      // Show sidebar only when article is visible and footer hasn't entered viewport
-      if (articleTop < window.innerHeight && footerTop > window.innerHeight) {
-        sidebar.style.display = 'block';
+      // Check if sidebar is manually closed
+      var isClosed = sidebar.classList.contains('lc-hidden');
+
+      // Show sidebar only when article is visible, footer hasn't entered, and not manually closed
+      if (articleTop < window.innerHeight && footerTop > window.innerHeight && !isClosed) {
+        sidebar.classList.add('lc-visible');
+        toggleBtn.classList.remove('lc-visible');
+      } else if (articleTop < window.innerHeight && footerTop > window.innerHeight && isClosed) {
+        // Show toggle button instead if closed
+        sidebar.classList.remove('lc-visible');
+        toggleBtn.classList.add('lc-visible');
       } else {
-        sidebar.style.display = 'none';
+        // Hide both when outside blog content area
+        sidebar.classList.remove('lc-visible');
+        toggleBtn.classList.remove('lc-visible');
       }
     }
 
@@ -437,47 +475,7 @@
     });
   }
 
-  /* ══════════════════════════════════════════
-     3. MID-ARTICLE INLINE BANNER
-  ══════════════════════════════════════════ */
-  function buildMidBanner() {
-    var banner = document.createElement('div');
-    banner.className = 'lc-mid-banner';
-    banner.innerHTML =
-      '<div class="lc-mid-banner-head">' +
-        '<div class="lc-eyebrow">Free 30-Min Discovery Call</div>' +
-        '<h3>Still Not Getting Interview Calls?<br>Let\'s Fix That — For Free.</h3>' +
-        '<p>Book a free call. We\'ll diagnose exactly what\'s blocking you and tell you how to fix it. No sales pressure.</p>' +
-      '</div>' +
-      '<form onsubmit="return false;">' +
-        formFieldsHTML('mb2') +
-        '<button class="lcf-btn" onclick="lcSubmit(\'mb2\', this)">Get My Free Discovery Call →</button>' +
-      '</form>';
 
-    // Inject after the 3rd <h2> in the article, or after 40% of article content
-    var article = document.querySelector('article, .blog-body, main');
-    if (!article) return;
-
-    var h2s = article.querySelectorAll('h2');
-    var target = h2s[2] ? h2s[2].parentNode : null; // after 3rd h2's parent
-
-    if (target && h2s[2]) {
-      h2s[2].after(banner);
-    } else {
-      // Fallback: inject at ~40% of article children
-      var children = Array.from(article.children);
-      var insertAt  = Math.floor(children.length * 0.4);
-      var refNode   = children[insertAt];
-      if (refNode) {
-        article.insertBefore(banner, refNode);
-      } else {
-        article.appendChild(banner);
-      }
-    }
-  }
-
-  /* ══════════════════════════════════════════
-     4. EXIT-INTENT POPUP
   ══════════════════════════════════════════ */
   function buildExitPopup() {
     var overlay = document.createElement('div');
@@ -552,7 +550,6 @@
     injectStyles();
     buildSidebar();
     buildMobileBar();
-    buildMidBanner();
     buildExitPopup();
   }
 
