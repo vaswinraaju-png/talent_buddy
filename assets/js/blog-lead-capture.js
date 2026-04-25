@@ -490,6 +490,8 @@
   }
 
 
+  /* ══════════════════════════════════════════
+     3. EXIT-INTENT POPUP
   ══════════════════════════════════════════ */
   function buildExitPopup() {
     var overlay = document.createElement('div');
