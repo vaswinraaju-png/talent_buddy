@@ -366,64 +366,33 @@
 </section>
 
 
-<!-- SUCCESS STORIES SLIDER -->
-<section id="success" aria-labelledby="success-heading">
-  <div style="max-width:1100px;margin:0 auto;padding:0 5%">
+<!-- SUCCESS STORY SLIDER -->
+<section id="success">
+  <div style="max-width:1100px;margin:0 auto;padding:0 5%;margin-bottom:36px">
     <p class="sl fi">Success Stories</p>
-    <h2 class="st fi" id="success-heading">Real Candidates.<br>Real Interview Calls.</h2>
-    <p class="ss fi">Every story below is a real person who came to us with zero callbacks and left with interview invites. No fabrication. No employer kickbacks. Just honest strategy.</p>
+    <h2 class="st fi">Real Candidates.<br>Real Interview Calls.</h2>
+    <p class="ss fi">Every story below is a real person who came to us with zero callbacks and left with interview invites.</p>
   </div>
   <div class="slider-outer" id="sliderOuter">
-    <button class="sarr" id="sarr-prev" onclick="slideMove(-1)" aria-label="Previous story">&#8592;</button>
-    <button class="sarr sarr-r" id="sarr-next" onclick="slideMove(1)" aria-label="Next story">&#8594;</button>
     <div class="slider-track" id="sliderTrack">
-      <article class="ss-card fi" style="background:linear-gradient(160deg,#0A1628 60%,#1a2a4a)">
-        <div class="ss-tag">IT · Bangalore</div>
-        <div class="ss-body">
-          <div class="ss-quote">"</div>
-          <p class="ss-txt">200+ applications. Zero calls. After TalentBuddy rebuilt my CV and ran their recruiter outreach, I had 3 interview calls in 2 weeks. The live dashboard meant I always knew exactly what was happening.</p>
-          <div class="ss-auth"><div class="ss-av" style="background:#2164F3">RK</div><div><div class="ss-name">Rahul Kumar</div><div class="ss-role">Software Developer · TCS Bangalore</div></div></div>
-        </div>
-        <div class="ss-stat"><span>3</span> Interview Calls in 2 weeks</div>
-      </article>
-      <article class="ss-card fi" style="background:linear-gradient(160deg,#0A2818 60%,#0f3320)">
-        <div class="ss-tag">Marketing · Hyderabad</div>
-        <div class="ss-body">
-          <div class="ss-quote">"</div>
-          <p class="ss-txt">What made TalentBuddy different was how ethical they were. No fake promises, no CV inflation. The weekly updates kept me sane. I went from 0 to 4 interview calls and got placed within 5 weeks.</p>
-          <div class="ss-auth"><div class="ss-av" style="background:#0DBD6E">PS</div><div><div class="ss-name">Priya Suresh</div><div class="ss-role">Marketing Manager · Placed in Hyderabad</div></div></div>
-        </div>
-        <div class="ss-stat"><span>4</span> Interview Calls in 5 weeks</div>
-      </article>
-      <article class="ss-card fi" style="background:linear-gradient(160deg,#1A0A28 60%,#2a1040)">
-        <div class="ss-tag">Career Switch · Chennai</div>
-        <div class="ss-body">
-          <div class="ss-quote">"</div>
-          <p class="ss-txt">Finance to Product Management felt impossible. The market report they sent before engagement was eye-opening. I approved every step. Got 4 interview calls — including one from a company I'd never have found myself.</p>
-          <div class="ss-auth"><div class="ss-av" style="background:#7C3AED">AM</div><div><div class="ss-name">Aditya Menon</div><div class="ss-role">Product Manager · Chennai</div></div></div>
-        </div>
-        <div class="ss-stat"><span>4</span> Interview Calls — Career Switch</div>
-      </article>
-      <article class="ss-card fi" style="background:linear-gradient(160deg,#1A1A0A 60%,#2a2a10)">
-        <div class="ss-tag">Sales · Mumbai</div>
-        <div class="ss-body">
-          <div class="ss-quote">"</div>
-          <p class="ss-txt">I was applying for 4 months with nothing. My CV wasn't getting past ATS. TalentBuddy fixed my CV, ran a targeted campaign, and I had my first interview call in week 2. Joined a fintech startup in Mumbai.</p>
-          <div class="ss-auth"><div class="ss-av" style="background:#FF6B2B">NK</div><div><div class="ss-name">Neha Kapoor</div><div class="ss-role">Sales Lead · Fintech Startup, Mumbai</div></div></div>
-        </div>
-        <div class="ss-stat"><span>5</span> Interview Calls in 3 weeks</div>
-      </article>
-      <article class="ss-card fi" style="background:linear-gradient(160deg,#0A1020 60%,#0a1830)">
-        <div class="ss-tag">IT · Delhi NCR</div>
-        <div class="ss-body">
-          <div class="ss-quote">"</div>
-          <p class="ss-txt">Fresh graduate with no work experience. I didn't think a placement service could help me. TalentBuddy's approach was completely different — they built a strategy around my projects and skills. 2 interview calls in week 3.</p>
-          <div class="ss-auth"><div class="ss-av" style="background:#0DBD6E">VR</div><div><div class="ss-name">Vikram Rao</div><div class="ss-role">Junior Developer · Delhi NCR</div></div></div>
-        </div>
-        <div class="ss-stat"><span>2</span> Calls as a Fresher — Week 3</div>
-      </article>
+      <div class="ss-card"><img src="assets/images/success-stories/story-1.jpg" alt="Success Story 1"></div>
+      <div class="ss-card"><img src="assets/images/success-stories/story-2.jpg" alt="Success Story 2"></div>
+      <div class="ss-card"><img src="assets/images/success-stories/story-3.jpg" alt="Success Story 3"></div>
+      <div class="ss-card"><img src="assets/images/success-stories/story-4.jpg" alt="Success Story 4"></div>
+      <div class="ss-card"><img src="assets/images/success-stories/story-5.jpg" alt="Success Story 5"></div>
+      <div class="ss-card"><img src="assets/images/success-stories/story-6.jpg" alt="Success Story 6"></div>
     </div>
-    <div class="slider-dots" id="sliderDots" role="tablist" aria-label="Story navigation"></div>
+  </div>
+  <div class="slider-controls">
+    <div class="slider-dots" id="sliderDots"></div>
+    <div class="slider-arrows">
+      <button class="sarr" id="sarr-prev" onclick="slideMove(-1)" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="sarr" id="sarr-next" onclick="slideMove(1)" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   </div>
 </section>
 
