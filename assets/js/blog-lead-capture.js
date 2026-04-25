@@ -402,7 +402,7 @@
       toggleBtn.classList.remove('lc-visible');
     });
 
-    // Show/hide sidebar based on scroll depth (20%-90%)
+    // Show/hide sidebar based on scroll depth (30%-80%)
     var footer = document.querySelector('footer');
 
     function updateSidebarVisibility() {
@@ -421,8 +421,8 @@
 
       console.log('[LC] Scroll depth:', scrollPercent.toFixed(1) + '%', 'isClosed:', isClosed);
 
-      // Show sidebar/toggle only between 20%-90% scroll depth
-      var inRange = scrollPercent >= 20 && scrollPercent <= 90;
+      // Show sidebar/toggle only between 30%-80% scroll depth
+      var inRange = scrollPercent >= 30 && scrollPercent <= 80;
 
       if (inRange && !isClosed) {
         // Show form, hide toggle
@@ -433,7 +433,7 @@
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.add('lc-visible');
       } else {
-        // Hide both when outside 20%-90% range
+        // Hide both when outside 30%-80% range
         sidebar.classList.remove('lc-visible');
         toggleBtn.classList.remove('lc-visible');
       }
