@@ -116,19 +116,35 @@
     var style = document.createElement('style');
     style.textContent = `
       /* ── SHARED FORM STYLES ── */
-      .lcf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .lcf-fg { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-      .lcf-fg label { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.6); letter-spacing: .3px; }
+      .lcf-row { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 12px;
+      }
+      .lcf-fg { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 6px; 
+        margin-bottom: 12px;
+      }
+      .lcf-fg label { 
+        font-size: .72rem; 
+        font-weight: 600; 
+        color: rgba(255,255,255,.6); 
+        letter-spacing: .3px; 
+      }
       .lcf-fg input, .lcf-fg select {
-        padding: 10px 12px;
+        padding: 12px 14px;
         border: 1.5px solid rgba(255,255,255,.15);
-        border-radius: 8px;
-        font-size: .83rem;
+        border-radius: 10px;
+        font-size: .85rem;
         font-family: 'DM Sans', sans-serif;
         color: white;
         background: rgba(255,255,255,.08);
         outline: none;
         transition: border-color .2s, background .2s;
+        width: 100%;
+        box-sizing: border-box;
       }
       .lcf-fg input::placeholder { color: rgba(255,255,255,.3); }
       .lcf-fg select option { background: #0A1628; color: white; }
