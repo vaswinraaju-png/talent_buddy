@@ -121,6 +121,7 @@ nav[aria-label="Main navigation"] {
 .mnav.open { display: flex; }
 .mnav a { text-decoration: none; color: var(--text); font-size: 1rem; font-weight: 500; }
 .mnav .mblog { border: 1.5px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
+.mnav .mblog.mtool { border-color: rgba(124,58,237,.4); color: var(--accent); background: rgba(124,58,237,.06); font-weight: 700; }
 .mnav .mcta { background: var(--blue); color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
 
 /* ── HERO ── */
@@ -643,11 +644,59 @@ footer { background: var(--navy); padding: 48px 5% 26px; }
   .cta-in h2 { font-size: 1.4rem; }
 }
 
-/* ── MOBILE: EXTRA IMPROVEMENTS ── */
+/* ── MOBILE OVERFLOW FIX — ROOT CAUSES ── */
 
-/* Nav: on small screens reduce padding, shrink CTA */
-@media (max-width: 380px) {
-  nav { padding: 0 4%; height: 60px; }
+/* Ensure nothing bleeds past viewport */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Fix cgrid — force single column on mobile */
+@media (max-width: 900px) {
+  .cgrid { grid-template-columns: 1fr !important; gap: 28px; }
+  .cform { width: 100%; box-sizing: border-box; }
+}
+
+/* Fix select elements — they notoriously expand beyond parent on mobile */
+select, input, textarea, button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.fg input, .fg select, .fg textarea { width: 100% !important; max-width: 100% !important; }
+
+/* Fix fr (first/last name row) — stack on mobile */
+@media (max-width: 600px) {
+  .fr { grid-template-columns: 1fr !important; }
+}
+
+/* Fix any section or element causing right-side bleed */
+section, .si, .ft, .tbar, .hero-in, .pgrid, .trans-grid,
+.prom-grid, .agrid, .tgrid, .cgrid, .dash-wrap, .faq-list {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Prevent absolute glow elements from causing scrollable overflow */
+.hero, .cta-sec, .dash-wrap, .mpanel { overflow: hidden; }
+
+/* Fix the tool CTA banner section overflow */
+section[style*="linear-gradient"] { width: 100%; box-sizing: border-box; overflow: hidden; }
+section[style*="linear-gradient"] .si { padding: 0; }
+section[style*="linear-gradient"] a[style] { max-width: calc(100% - 32px); box-sizing: border-box; word-break: break-word; }
+
+/* Contact info tiles — prevent overflow */
+.cit { width: 100%; box-sizing: border-box; overflow: hidden; }
+.cit-v { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Footer — prevent text from bleeding */
+.ft-brand-desc, .fc ul li a { word-break: break-word; }
+.ft-links { width: 100%; box-sizing: border-box; }
+
+/* Ensure nav-right doesn't cause overflow on mid-size screens */
+@media (max-width: 1100px) and (min-width: 901px) {
+  .nav-links { gap: 1rem; }
+  .nav-links a { font-size: .78rem; }
+  .nav-right { gap: .5rem; }
+  .nav-blog, .nav-tool { padding: 7px 11px; font-size: .76rem; }
+  .nav-cta { padding: 9px 14px; font-size: .78rem; }
 }
 
 /* Dashboard: 4-col stat grid → 2×2 on mobile */
