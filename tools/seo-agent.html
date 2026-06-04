@@ -264,7 +264,7 @@ body{font-family:var(--sans);background:var(--navy);color:var(--white);min-heigh
         </div>
         <div class="field">
           <label>GitHub Personal Access Token</label>
-          <input type="password" id="cfg-ghpat" placeholder="ghp_..." value="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">
+          <input type="password" id="cfg-ghpat" placeholder="ghp_..." value="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">
         </div>
         <div class="field-row">
           <div class="field">
@@ -443,7 +443,7 @@ window.onload = function() {
 function loadConfig() {
   cfg.anthropicKey = localStorage.getItem('tb_anthropic') || '';
   cfg.model   = localStorage.getItem('tb_model')|| 'llama-3.3-70b-versatile';
-  cfg.ghPat   = localStorage.getItem('tb_ghpat')|| document.getElementById('cfg-ghpat').value;
+  cfg.ghPat   = localStorage.getItem('tb_ghpat') || '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';
   cfg.owner   = localStorage.getItem('tb_owner')|| 'vaswinraaju-png';
   cfg.repo    = localStorage.getItem('tb_repo') || 'talent_buddy';
   cfg.branch  = localStorage.getItem('tb_branch')|| 'main';
