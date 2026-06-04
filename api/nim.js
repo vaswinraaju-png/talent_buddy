@@ -27,8 +27,23 @@ export default async function handler(req, res) {
       body: JSON.stringify(req.body)
     });
 
-    const data = await nimRes.json();
+const text = await nimRes.text();
+console.log('NIM RAW RESPONSE:', text);
 
+try {
+  const data = JSON.parse(text);
+
+  if (!nimRes.ok) {
+    return res.status(nimRes.status).json(data);
+  }
+
+  return res.status(200).json(data);
+} catch (e) {
+  return res.status(500).json({
+    error: 'Invalid JSON from NIM',
+    raw: text.substring(0, 1000)
+  });
+}
     if (!nimRes.ok) {
       return res.status(nimRes.status).json(data);
     }
