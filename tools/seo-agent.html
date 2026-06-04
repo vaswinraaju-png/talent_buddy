@@ -688,7 +688,21 @@ STRICT RULES - follow every single one:
 14. End with FAQ: exactly 3 questions using <details class="faq-item"><summary class="faq-q">Question here</summary><div class="faq-a"><p>Answer here</p></div></details>
 15. No keyword stuffing. Natural density only.
 
-OUTPUT: Return ONLY the article body HTML. Start with a <p> intro paragraph, no H1. Use p, h2, h3, ul, li, strong, a, and .callout divs only. No DOCTYPE, no html or body tags, no style tags.`;
+OUTPUT RULES — HARD REQUIREMENTS:
+A. Return ONLY valid HTML. No plain text, no markdown, no asterisks, no ## headings.
+B. Every section heading must be a real <h2> or <h3> tag. Never use bold text as a heading.
+C. Keyword density: primary keyword appears maximum 8 times total. No stuffing.
+D. Vary sentence structure throughout. No two consecutive sentences with the same pattern.
+E. FAQ must use exactly this format: <details class="faq-item"><summary class="faq-q">Question</summary><div class="faq-a"><p>Full detailed answer here, minimum 2 sentences.</p></div></details>
+F. Callout must use exactly: <div class="callout"><p><strong>Pro tip:</strong> actionable tip here</p></div>
+G. Internal links must be real anchor tags: <a href="/blog/slug.html">anchor text</a>. Never just mention them.
+H. CTA phone must be: <a href="tel:+919980291663">+91 99802 91663</a>
+I. No vague stats. Never write 'a recent study found' or 'according to surveys'. Use specific source: 'Naukri's 2026 hiring report' or 'industry estimates suggest X%'.
+J. Every H2 section must give the reader one concrete, actionable takeaway. Not just what is happening, but what to DO.
+K. Minimum 1400 words. Count carefully. If short, expand each section.
+L. Short paragraphs only. Hard limit: 3 sentences per paragraph. Break longer thoughts into multiple paragraphs.
+M. Start article with a <p> intro paragraph. No H1 tag anywhere in the output.
+N. End with FAQ section (3 questions with full answers) followed by nothing else.`;
 
   var data = await callNIM(prompt, 4000);
   return data.choices[0].message.content.trim();
