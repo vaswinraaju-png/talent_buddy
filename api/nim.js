@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // CORS headers
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -9,47 +9,67 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      error: 'Method not allowed'
+    });
   }
 
   const apiKey = process.env.NIM_API_KEY;
+
   if (!apiKey) {
-    return res.status(500).json({ error: 'NIM_API_KEY environment variable not set' });
+    return res.status(500).json({
+      error: 'NIM_API_KEY environment variable not set'
+    });
   }
 
   try {
-    const nimRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(req.body)
-    });
+    // Debug incoming payload
+    console.log('REQUEST BODY:');
+    console.log(JSON.stringify(req.body, null, 2));
 
-const text = await nimRes.text();
-console.log('NIM RAW RESPONSE:', text);
+    const nimRes = await fetch(
+      'https://integrate.api.nvidia.com/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(req.body)
+      }
+    );
 
-try {
-  const data = JSON.parse(text);
+    const rawResponse = await nimRes.text();
 
-  if (!nimRes.ok) {
-    return res.status(nimRes.status).json(data);
-  }
+    console.log('NIM STATUS:', nimRes.status);
+    console.log('NIM RAW RESPONSE:');
+    console.log(rawResponse);
 
-  return res.status(200).json(data);
-} catch (e) {
-  return res.status(500).json({
-    error: 'Invalid JSON from NIM',
-    raw: text.substring(0, 1000)
-  });
-}
+    let data;
+
+    try {
+      data = JSON.parse(rawResponse);
+    } catch (parseError) {
+      console.error('JSON PARSE ERROR:', parseError);
+
+      return res.status(500).json({
+        error: 'Invalid JSON from NIM',
+        status: nimRes.status,
+        raw: rawResponse.substring(0, 5000)
+      });
+    }
+
     if (!nimRes.ok) {
       return res.status(nimRes.status).json(data);
     }
 
     return res.status(200).json(data);
+
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('SERVER ERROR:', err);
+
+    return res.status(500).json({
+      error: err.message
+    });
   }
 }
