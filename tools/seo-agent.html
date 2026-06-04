@@ -208,7 +208,7 @@ body{font-family:var(--sans);background:var(--navy);color:var(--white);min-heigh
 <aside class="sidebar">
   <div class="logo-wrap">
     <div class="logo-dot"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-    <div><div class="logo-name">TalentBuddy</div><div class="logo-sub">SEO Agent · Claude</div></div>
+    <div><div class="logo-name">TalentBuddy</div><div class="logo-sub">SEO Agent · Groq</div></div>
   </div>
 
   <div class="nav-section">
@@ -249,15 +249,17 @@ body{font-family:var(--sans);background:var(--navy);color:var(--white);min-heigh
         <div class="cfg-title">Configuration</div>
         <div class="cfg-desc">API keys saved in browser localStorage only — never sent anywhere except the respective APIs.</div>
         <div class="field">
-          <label>Anthropic API Key</label>
-          <input type="password" id="cfg-anthropic" placeholder="sk-ant-..." autocomplete="off">
-          <div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:5px">Get yours at console.anthropic.com · Free $5 credit on signup</div>
+          <label>Groq API Key</label>
+          <input type="password" id="cfg-anthropic" placeholder="gsk_..." autocomplete="off">
+          <div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:5px">Get free key at console.groq.com · No credit card needed</div>
         </div>
         <div class="field">
           <label>AI Model</label>
           <select id="cfg-model">
-            <option value="claude-sonnet-4-20250514" selected>Claude Sonnet 4 (Recommended)</option>
-            <option value="claude-opus-4-20250514">Claude Opus 4</option>
+            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B (Recommended)</option>
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Faster)</option>
+            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+            <option value="gemma2-9b-it">Gemma 2 9B</option>
           </select>
         </div>
         <div class="field">
@@ -409,6 +411,21 @@ var EXISTING_POSTS = [
   'How to Get a Job in India Without Referrals or Connections'
 ];
 
+var CONTENT_BUCKETS = [
+  'Core Job Search: interview prep, resume writing, ATS, LinkedIn, cover letters, job portals, recruiter outreach, salary negotiation',
+  'Career Stage: fresher campus placements, first job, internship to full-time, career change at 30, returning after gap, women returning after maternity',
+  'Layoffs and Crisis: what to do after layoff, layoff survival India, explaining layoff in interview, severance FnF, mental health after job loss, tech layoffs 2026',
+  'MNC Hiring: how TCS Infosys Wipro HCL Accenture hire, MNC referral programs, walk-in drives, hiring seasons India, background verification, MNC vs startup',
+  'Startup Hiring: how startups hire, finding startup jobs India, ESOP equity, startup culture fit, Series A B funding job security, startup job boards',
+  'AI and Future of Work: AI replacing jobs which roles safe, skills stay relevant 2026, AI tools for job seekers, ChatGPT job search, prompt engineering career, AI in hiring screening',
+  'Industry Specific: IT software jobs, product management, data analyst, digital marketing, finance BFSI, healthcare pharma, remote hybrid jobs India',
+  'Workplace and Work Culture: remote work jobs India, WFH vs office, toxic workplace, bad manager, work-life balance, moonlighting policy, notice period negotiation',
+  'Salary and Compensation: average salaries by role and city India, CTC vs in-hand, variable pay bonus, how to ask for raise, salary hike during job switch',
+  'Soft Skills and Personal Brand: LinkedIn personal brand, communication skills interviews, body language, networking India, references recommendations',
+  'Location Specific: jobs in Bangalore, Hyderabad, Mumbai, Chennai, Pune, Delhi NCR, tier-2 city job market, relocating for work India',
+  'Overseas and Global: job abroad from India, Germany opportunity card Indians, Canada PR jobs, Australia jobs Indians, Gulf jobs, remote jobs global companies'
+];
+
 /* ── INIT ── */
 window.onload = function() {
   loadConfig();
@@ -425,7 +442,7 @@ window.onload = function() {
 
 function loadConfig() {
   cfg.anthropicKey = localStorage.getItem('tb_anthropic') || '';
-  cfg.model   = localStorage.getItem('tb_model')|| 'claude-sonnet-4-20250514';
+  cfg.model   = localStorage.getItem('tb_model')|| 'llama-3.3-70b-versatile';
   cfg.ghPat   = localStorage.getItem('tb_ghpat')|| document.getElementById('cfg-ghpat').value;
   cfg.owner   = localStorage.getItem('tb_owner')|| 'vaswinraaju-png';
   cfg.repo    = localStorage.getItem('tb_repo') || 'talent_buddy';
@@ -468,28 +485,32 @@ async function discoverTopics() {
   btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Researching…';
   document.getElementById('topics-content').innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' + Array(6).fill('<div style="height:180px;border-radius:14px" class="skeleton"></div>').join('') + '</div>';
 
-  var prompt = `You are an SEO strategist for TalentBuddy, an Indian job placement services company at talentbuddy.xyz.
+  var prompt = `You are an expert SEO strategist for TalentBuddy (talentbuddy.xyz), an Indian job placement services company.
 
-EXISTING BLOG POSTS (already covered — do NOT suggest these):
+WHAT TALENTBUDDY DOES: Paid placement service helping Indian job seekers get interview calls. Services: profile analysis, ATS-optimised CV, 5+ job search strategies, live tracking dashboard, recruiter outreach. CTA: book a free 30-min discovery call at +91 99802 91663.
+
+EXISTING POSTS (do NOT repeat these or close variants):
 ${EXISTING_POSTS.map(function(p,i){return (i+1)+'. '+p}).join('\n')}
 
-TARGET AUDIENCE: Indian job seekers — freshers, working professionals, career switchers, IT professionals.
+CONTENT BUCKETS (pick topics from at least 4 different buckets for variety):
+${CONTENT_BUCKETS.map(function(b,i){return (i+1)+'. '+b}).join('\n')}
 
-TASK: Suggest exactly 6 new blog post topics that:
-1. Target high-search-volume keywords in the India job search space
-2. Cover gaps NOT in the existing posts above
-3. Would drive organic traffic to TalentBuddy and generate leads (free call bookings)
-4. Are informational/educational (not promotional)
+RULES FOR TOPIC SELECTION:
+- Each topic must naturally lead to TalentBuddy placement service CTA
+- India-specific angles: mention cities, Indian companies, Indian job market
+- Use 2026 in titles where year is relevant, never 2024 or 2025
+- No em dashes in titles
+- High search volume India keywords only
 
-Respond ONLY with a valid JSON array of 6 objects. No preamble, no markdown, no backticks. Keep all string values SHORT (under 100 chars each). Each object must have exactly these keys:
-- title: string (H1, max 70 chars)
-- keyword: string (3-5 words)
-- tag: string (1-2 words)
+Respond ONLY with a valid JSON array of exactly 6 objects. No preamble, no markdown fences, no backticks. Keep all string values SHORT (max 100 chars each). Each object must have exactly these keys:
+- title: string (H1, max 70 chars, include primary keyword)
+- keyword: string (primary keyword, 3-5 words)
+- tag: string (bucket name, 1-3 words)
 - intent: string ("Informational" or "Commercial")
-- gap: string (max 80 chars)
-- reason: string (max 100 chars)
-- vol: string (e.g. "10,000/mo")
-- slug: string (kebab-case, no .html, max 50 chars)`;
+- gap: string (content gap reason, max 80 chars)
+- reason: string (why drives traffic and leads, max 100 chars)
+- vol: string (India monthly searches estimate, e.g. "15,000/mo")
+- slug: string (kebab-case, no stop words, no .html, max 50 chars)`;
 
   try {
     var data = await callNIM(prompt, 2000);
@@ -637,31 +658,39 @@ async function generateArticle(topic) {
     'without referrals': '/blog/get-job-without-referrals.html'
   };
 
-  var prompt = `You are an expert SEO content writer for TalentBuddy (talentbuddy.xyz), India's job placement services company. Write a comprehensive, SEO-optimised blog article.
+  var prompt = `You are an expert SEO content writer for TalentBuddy (talentbuddy.xyz), India's job placement services company. TalentBuddy helps Indian job seekers get interview calls through ATS-optimised CVs, recruiter outreach, and proven strategies. Every article must drive readers to book a FREE 30-min discovery call at +91 99802 91663.
 
-ARTICLE DETAILS:
-- Title: ${topic.title}
-- Target keyword: "${topic.keyword}"
-- Intent: ${topic.intent}
-- Tag/Category: ${topic.tag}
+ARTICLE TO WRITE:
+Title: ${topic.title}
+Primary keyword: "${topic.keyword}"
+Category: ${topic.tag}
+Intent: ${topic.intent}
 
-WRITING REQUIREMENTS:
-1. ~1400-1600 words
-2. Use H2 and H3 headings that include keyword variations
-3. Write for Indian job seekers — use India-specific context (Naukri, LinkedIn India, Bangalore, Mumbai, Hyderabad etc.)
-4. Conversational but authoritative tone — match this existing TalentBuddy voice: "The frustrating truth? The problem is almost never your experience. It's your strategy."
-5. Include 2-3 data points or statistics (can be estimates, clearly stated as such)
-6. Add 1-2 callout boxes with a practical tip (use <div class="callout"><p>...</p></div>)
-7. End with a strong CTA paragraph encouraging readers to book a free call with TalentBuddy at +91 99802 91663
-8. Include a 3-question FAQ section at the end
-9. Naturally mention/link to these existing TalentBuddy articles where relevant:
-   - ATS resume rejection → /blog/ats-resume-rejection.html
-   - Why no interview calls → /blog/why-no-interview-calls.html
-   - Hidden job market → /blog/hidden-job-market-india.html
+STRICT RULES - follow every single one:
+1. Length: 1400 to 1600 words
+2. Primary keyword must appear in: first 100 words, at least 2 H2 headings
+3. H2s and H3s must be searchable phrases with keyword variations, not clever wordplay
+4. NEVER use em dashes. Use commas or colons instead. This is a hard rule.
+5. No filler openers like 'In today's competitive world' or 'Are you struggling with'
+6. Short paragraphs only. Maximum 2 to 3 sentences per paragraph.
+7. Tone: conversational but authoritative. Match this TalentBuddy voice: 'The frustrating truth? The problem is almost never your qualifications. It's your strategy.'
+8. India-specific throughout: mention Naukri, LinkedIn India, cities (Bangalore, Hyderabad, Mumbai, Chennai, Pune), Indian companies (TCS, Infosys, Wipro, Accenture, Flipkart, Zomato) where natural
+9. All year references must be 2026. Never write 2024 or 2025.
+10. Include 2 to 3 data points or statistics. Estimates are fine, phrase as 'industry estimates suggest' or 'studies indicate'
+11. Add exactly 1 callout box: <div class="callout"><p><strong>Pro tip:</strong> your tip here</p></div>
+12. Internal links: naturally link to at least 2 of these where relevant:
+    <a href="/blog/ats-resume-rejection.html">ATS resume rejection</a>
+    <a href="/blog/why-no-interview-calls.html">why you are not getting interview calls</a>
+    <a href="/blog/hidden-job-market-india.html">hidden job market in India</a>
+    <a href="/blog/resume-mistakes-freshers.html">resume mistakes freshers make</a>
+    <a href="/blog/get-job-without-referrals.html">how to get a job without referrals</a>
+13. Place a CTA paragraph before the FAQ pushing readers to book a free call with TalentBuddy at +91 99802 91663
+14. End with FAQ: exactly 3 questions using <details class="faq-item"><summary class="faq-q">Question here</summary><div class="faq-a"><p>Answer here</p></div></details>
+15. No keyword stuffing. Natural density only.
 
-OUTPUT FORMAT: Return ONLY the article body HTML. Start directly with a <p> intro paragraph (no h1 — that goes in the page template). Include h2, h3, p, ul, li, strong, a, and .callout divs. No DOCTYPE, no html/body tags, no styles.`;
+OUTPUT: Return ONLY the article body HTML. Start with a <p> intro paragraph, no H1. Use p, h2, h3, ul, li, strong, a, and .callout divs only. No DOCTYPE, no html or body tags, no style tags.`;
 
-  var data = await callNIM(prompt, 2500);
+  var data = await callNIM(prompt, 4000);
   return data.choices[0].message.content.trim();
 }
 
@@ -790,7 +819,7 @@ function wrapInTemplate(bodyHTML, topic, metaDesc) {
     </nav>
     <span class="post-tag">${escHtml(topic.tag)}</span>
     <h1>${escHtml(topic.title)}</h1>
-    <p class="post-meta">By TalentBuddy Team &nbsp;·&nbsp; Published ${today} &nbsp;·&nbsp; ${readTime} min read</p>
+    <p class="post-meta">By TalentBuddy Team &nbsp;·&nbsp; Updated ${new Date().toLocaleDateString('en-IN', {month:'long', year:'numeric'})} &nbsp;·&nbsp; ${readTime} min read</p>
   </div>
 </header>
 
@@ -836,7 +865,7 @@ function wrapInTemplate(bodyHTML, topic, metaDesc) {
         </ul></div>
       </div>
     </div>
-    <div class="ft-bot"><span>© ${new Date().getFullYear()} TalentBuddy Job Placement Services India. All rights reserved.</span><div style="display:flex;gap:18px"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div>
+    <div class="ft-bot"><span>© 2026 TalentBuddy Job Placement Services India. All rights reserved.</span><div style="display:flex;gap:18px"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div>
   </div>
 </footer>
 
@@ -1055,34 +1084,26 @@ async function ghFetch(method, path, body) {
   return method === 'DELETE' ? {} : res.json();
 }
 
-/* ── ANTHROPIC CLAUDE API (artifact proxy) ── */
+/* ── GROQ API ── */
 async function callNIM(prompt, maxTokens) {
-  var res = await fetch('https://api.anthropic.com/v1/messages', {
+  var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': cfg.anthropicKey || '',
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      'Authorization': 'Bearer ' + (cfg.anthropicKey || '')
     },
     body: JSON.stringify({
-      model: cfg.model || 'claude-sonnet-4-20250514',
+      model: cfg.model || 'llama-3.3-70b-versatile',
+      messages: [{role:'user', content: prompt}],
       max_tokens: maxTokens || 1500,
-      messages: [{role:'user', content: prompt}]
+      temperature: 0.7
     })
   });
   if (!res.ok) {
     var err = await res.json().catch(function(){return{}});
-    throw new Error('Claude API ' + res.status + ': ' + (err.error && err.error.message ? err.error.message : res.statusText));
+    throw new Error('Groq API ' + res.status + ': ' + (err.error && err.error.message ? err.error.message : res.statusText));
   }
-  var data = await res.json();
-  return {
-    choices: [{
-      message: {
-        content: data.content && data.content[0] ? data.content[0].text : ''
-      }
-    }]
-  };
+  return res.json();
 }
 
 /* ── HELPERS ── */
