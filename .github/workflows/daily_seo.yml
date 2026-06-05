@@ -1,0 +1,41 @@
+name: "Daily AI SEO Agent"
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs automatically every day at midnight
+  workflow_dispatch:      # This adds the "Run manually" button in GitHub Actions
+
+jobs:
+  build-seo-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Run AI SEO Script
+        # This script calls Gemini/GPT to create a new blog post
+        run: node scripts/generate-seo-content.js
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Create Pull Request
+        # This is your "Approve" step. It creates a PR instead of pushing to main.
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: automated daily seo update"
+          title: "🤖 AI SEO: New Content Ready for Review"
+          body: |
+            This is an automated SEO update for talentbuddy.xyz.
+            - New blog post generated.
+            - Sitemap updated.
+            - Meta tags optimized.
+            
+            **Action Required:** Review the changes and click 'Merge' to publish.
+          branch: "ai-seo-updates"
+          delete-branch: true
