@@ -3,1134 +3,1013 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TalentBuddy — SEO Content Agent</title>
+<title>TalentBuddy SEO Agent v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0A1628;--blue:#2164F3;--green:#0DBD6E;--orange:#FF6B2B;
-  --accent:#7C3AED;--border:#E4E8F0;--muted:#5A6070;--bg:#F7F9FF;
-  --text:#1A1A2E;--white:#fff;
-  --mono:'DM Mono',monospace;--serif:'Fraunces',serif;--sans:'DM Sans',sans-serif;
+  --bg:#09111f;--surface:#0f1b2d;--surface2:#162035;--border:#1c2d44;--border2:#243550;
+  --accent:#2164F3;--accent2:#60a5fa;--green:#0DBD6E;--yellow:#f59e0b;--red:#ef4444;
+  --text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8;
+  --font:'DM Sans',-apple-system,sans-serif;--mono:'JetBrains Mono','Fira Code',monospace;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden}
-
-/* ── LAYOUT ── */
-.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
-
-/* ── SIDEBAR ── */
-.sidebar{background:#060e1a;border-right:1px solid rgba(255,255,255,.07);padding:28px 20px;display:flex;flex-direction:column;gap:0;position:sticky;top:0;height:100vh;overflow-y:auto}
-.logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.07)}
-.logo-dot{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-dot svg{width:16px;height:16px;fill:white}
-.logo-name{font-family:var(--serif);font-size:.95rem;font-weight:600;color:white;line-height:1.2}
-.logo-sub{font-size:.6rem;color:rgba(255,255,255,.3);letter-spacing:.8px;text-transform:uppercase}
-
-.nav-section{margin-bottom:8px}
-.nav-label{font-size:.58rem;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 10px;margin-bottom:6px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .2s;font-size:.8rem;color:rgba(255,255,255,.45);font-weight:500;text-decoration:none}
-.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
-.nav-item.active{background:rgba(33,100,243,.2);color:white;border:1px solid rgba(33,100,243,.3)}
-.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-
-.sidebar-footer{margin-top:auto;padding-top:20px;border-top:1px solid rgba(255,255,255,.07)}
-.cfg-btn{width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.5);font-size:.75rem;cursor:pointer;transition:all .2s;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:7px}
-.cfg-btn:hover{background:rgba(255,255,255,.1);color:white}
-.cfg-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* ── MAIN ── */
-.main{display:flex;flex-direction:column;background:#0d1829}
-
-/* ── TOPBAR ── */
-.topbar{padding:20px 32px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
-.topbar-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:white}
-.topbar-sub{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:2px}
-.status-pill{display:flex;align-items:center;gap:7px;background:rgba(13,189,110,.1);border:1px solid rgba(13,189,110,.25);color:var(--green);padding:6px 14px;border-radius:100px;font-size:.7rem;font-weight:600}
-.status-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-
-/* ── CONTENT AREA ── */
-.content{flex:1;padding:32px;overflow-y:auto}
-
-/* ── SCREEN PANELS ── */
-.screen{display:none}
-.screen.active{display:block}
-
-/* ── CONFIG PANEL ── */
-.config-panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;max-width:600px}
-.cfg-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;margin-bottom:6px}
-.cfg-desc{font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:24px;line-height:1.6}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
-.field input,.field select{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:white;font-size:.85rem;font-family:var(--sans);outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus{border-color:rgba(33,100,243,.6)}
-.field input::placeholder{color:rgba(255,255,255,.2)}
-.field select option{background:#1a2540;color:white}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.save-btn{margin-top:8px;padding:12px 24px;background:var(--blue);border:none;border-radius:9px;color:white;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
-.save-btn:hover{background:#1449c8;transform:translateY(-1px)}
-
-/* ── TOPICS SCREEN ── */
-.topics-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:20px}
-.topics-htext .screen-title{font-family:var(--serif);font-size:1.6rem;font-weight:600;line-height:1.2;margin-bottom:6px}
-.topics-htext .screen-sub{font-size:.82rem;color:rgba(255,255,255,.4);line-height:1.6}
-.discover-btn{padding:12px 22px;background:linear-gradient(135deg,var(--blue),var(--accent));border:none;border-radius:10px;color:white;font-family:var(--sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px;flex-shrink:0}
-.discover-btn:hover{opacity:.9;transform:translateY(-1px)}
-.discover-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.discover-btn svg{width:15px;height:15px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-.topics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.topic-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-.topic-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--accent));transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.topic-card:hover{border-color:rgba(33,100,243,.4);background:rgba(33,100,243,.06);transform:translateY(-2px)}
-.topic-card:hover::before{transform:scaleX(1)}
-.tc-tag{display:inline-block;background:rgba(33,100,243,.2);color:#93c5fd;font-size:.62rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:100px;margin-bottom:10px}
-.tc-title{font-family:var(--serif);font-size:1rem;font-weight:600;line-height:1.35;margin-bottom:8px;color:white}
-.tc-keyword{font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:10px}
-.tc-meta{display:flex;gap:12px;flex-wrap:wrap}
-.tc-badge{font-size:.65rem;padding:2px 8px;border-radius:100px;border:1px solid;font-weight:600}
-.tc-badge.intent{background:rgba(13,189,110,.1);color:var(--green);border-color:rgba(13,189,110,.25)}
-.tc-badge.gap{background:rgba(255,107,43,.1);color:var(--orange);border-color:rgba(255,107,43,.25)}
-.tc-badge.vol{background:rgba(124,58,237,.1);color:#c4b5fd;border-color:rgba(124,58,237,.25)}
-.tc-reason{font-size:.75rem;color:rgba(255,255,255,.4);line-height:1.55;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
-
-.write-btn{margin-top:14px;width:100%;padding:9px;background:rgba(33,100,243,.15);border:1px solid rgba(33,100,243,.3);border-radius:8px;color:#93c5fd;font-family:var(--sans);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s}
-.write-btn:hover{background:var(--blue);color:white;border-color:var(--blue)}
-
-/* ── THINKING STATE ── */
-.thinking-wrap{max-width:560px;margin:0 auto;padding:60px 0;text-align:center}
-.thinking-icon{width:64px;height:64px;background:linear-gradient(135deg,rgba(33,100,243,.2),rgba(124,58,237,.2));border:1px solid rgba(33,100,243,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:thinkpulse 2s infinite}
-@keyframes thinkpulse{0%,100%{box-shadow:0 0 0 0 rgba(33,100,243,.3)}50%{box-shadow:0 0 0 12px rgba(33,100,243,0)}}
-.thinking-icon svg{width:28px;height:28px;stroke:var(--blue);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.thinking-title{font-family:var(--serif);font-size:1.4rem;font-weight:600;margin-bottom:8px}
-.thinking-sub{font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:36px}
-.steps-list{text-align:left;max-width:400px;margin:0 auto;display:flex;flex-direction:column;gap:0}
-.step-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:10px;transition:background .3s}
-.step-row.active{background:rgba(33,100,243,.1)}
-.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;transition:all .3s}
-.step-num.pending{background:rgba(255,255,255,.06);color:rgba(255,255,255,.25)}
-.step-num.running{background:rgba(33,100,243,.25);color:var(--blue);animation:spin 1s linear infinite}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.step-num.done{background:rgba(13,189,110,.2);color:var(--green)}
-.step-text{font-size:.82rem;color:rgba(255,255,255,.5);transition:color .3s}
-.step-row.active .step-text{color:white}
-
-/* ── PREVIEW ── */
-.preview-wrap{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
-.preview-main{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
-.preview-toolbar{padding:14px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
-.preview-dot{width:10px;height:10px;border-radius:50%}
-.preview-url{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:5px 12px;font-family:var(--mono);font-size:.68rem;color:rgba(255,255,255,.3)}
-.preview-iframe-wrap{padding:24px;max-height:520px;overflow-y:auto}
-.article-preview{font-family:var(--sans);color:#1a1a2e;background:white;border-radius:10px;padding:28px;font-size:.85rem;line-height:1.75}
-.article-preview h1{font-family:'Georgia',serif;font-size:1.5rem;font-weight:700;margin-bottom:12px;line-height:1.25;color:#0a1628}
-.article-preview h2{font-family:'Georgia',serif;font-size:1.1rem;font-weight:700;margin:20px 0 8px;color:#0a1628}
-.article-preview h3{font-size:.95rem;font-weight:700;margin:16px 0 6px;color:#1a1a2e}
-.article-preview p{margin-bottom:10px;color:#5a6070}
-.article-preview strong{color:#1a1a2e}
-.article-preview a{color:#2164F3}
-.article-preview ul{margin:8px 0 12px 20px;color:#5a6070}
-.article-preview li{margin-bottom:4px}
-.article-preview .callout{background:#ebf1ff;border-left:4px solid #2164f3;padding:14px 18px;border-radius:0 10px 10px 0;margin:16px 0}
-.article-preview .callout p{margin:0;color:#1a1a2e;font-size:.82rem}
-
-.preview-side{}
-.meta-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;margin-bottom:14px}
-.meta-card-title{font-size:.65rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
-.meta-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.meta-row:last-child{border-bottom:none}
-.meta-key{font-size:.72rem;color:rgba(255,255,255,.35)}
-.meta-val{font-size:.72rem;color:white;font-weight:500;text-align:right;max-width:200px;word-break:break-word}
-.meta-val.green{color:var(--green)}
-.meta-val.mono{font-family:var(--mono);font-size:.65rem}
-
-.publish-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#059669);border:none;border-radius:10px;color:white;font-family:var(--sans);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.publish-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 24px rgba(13,189,110,.3)}
-.publish-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.publish-btn svg{width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.back-btn{width:100%;margin-top:10px;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.5);font-family:var(--sans);font-size:.82rem;cursor:pointer;transition:all .2s}
-.back-btn:hover{background:rgba(255,255,255,.1);color:white}
-
-/* ── SUCCESS ── */
-.success-wrap{max-width:520px;margin:0 auto;padding:60px 0;text-align:center}
-.success-icon{width:72px;height:72px;background:rgba(13,189,110,.15);border:2px solid rgba(13,189,110,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
-.success-icon svg{width:32px;height:32px;stroke:var(--green);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.success-title{font-family:var(--serif);font-size:1.6rem;font-weight:600;margin-bottom:8px}
-.success-sub{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:28px;line-height:1.6}
-.live-link{display:inline-flex;align-items:center;gap:8px;background:rgba(13,189,110,.1);border:1px solid rgba(13,189,110,.25);color:var(--green);padding:12px 22px;border-radius:10px;font-size:.82rem;font-weight:600;text-decoration:none;margin-bottom:12px;transition:all .2s}
-.live-link:hover{background:rgba(13,189,110,.2)}
-.live-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.new-btn{display:block;width:100%;max-width:260px;margin:12px auto 0;padding:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.6);font-family:var(--sans);font-size:.82rem;cursor:pointer;transition:all .2s}
-.new-btn:hover{background:rgba(255,255,255,.12);color:white}
-
-/* ── PUBLISHED LIST ── */
-.pub-item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:10px}
-.pub-icon{width:36px;height:36px;background:rgba(13,189,110,.1);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pub-icon svg{width:17px;height:17px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.pub-title{font-size:.82rem;font-weight:600;color:white;margin-bottom:2px}
-.pub-url{font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.3)}
-.pub-date{font-size:.65rem;color:rgba(255,255,255,.25);margin-left:auto;flex-shrink:0}
-.empty-state{text-align:center;padding:60px 0;color:rgba(255,255,255,.25);font-size:.85rem}
-
-/* ── LOG ── */
-.log-wrap{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;font-family:var(--mono);font-size:.7rem;max-height:160px;overflow-y:auto;margin-top:12px}
-.log-line{padding:2px 0;color:rgba(255,255,255,.35);line-height:1.6}
-.log-line.info{color:rgba(33,100,243,.8)}
-.log-line.ok{color:var(--green)}
-.log-line.err{color:#ef4444}
-
-/* ── LOADING SKELETON ── */
-.skeleton{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;right:24px;background:#1e2d47;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 18px;font-size:.78rem;color:white;z-index:999;display:flex;align-items:center;gap:10px;max-width:320px;transform:translateY(80px);opacity:0;transition:all .3s}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;height:100vh;overflow:hidden}
+.app{display:grid;grid-template-columns:256px 1fr 288px;grid-template-rows:52px 1fr;height:100vh}
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px}
+.logo{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+.logo svg{width:20px;height:20px}
+.logo-accent{color:var(--accent)}
+.badge{background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.5px}
+.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn-sm-top{background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);padding:5px 11px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--font);transition:all .15s}
+.btn-sm-top:hover{border-color:var(--accent);color:var(--accent)}
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-header{padding:12px 14px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sb-header h3{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.bucket-sel{padding:7px 14px;border-bottom:1px solid var(--border)}
+.bucket-sel select{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:6px 9px;border-radius:6px;font-size:11px;font-family:var(--font);outline:none;cursor:pointer}
+.bucket-sel select:focus{border-color:var(--accent)}
+.topic-acts{padding:7px 14px;display:flex;gap:7px;border-bottom:1px solid var(--border)}
+.btn-sm2{flex:1;padding:6px;background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);border-radius:5px;cursor:pointer;font-size:10px;font-family:var(--font);transition:all .15s;text-align:center}
+.btn-sm2:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm2.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-sm2.pri:hover{background:var(--accent2);border-color:var(--accent2)}
+.topics-list{flex:1;overflow-y:auto;padding:6px}
+.topic-item{padding:9px 10px;border-radius:7px;cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s;position:relative}
+.topic-item:hover{background:var(--surface2);border-color:var(--border2)}
+.topic-item.active{background:rgba(33,100,243,.1);border-color:rgba(33,100,243,.3)}
+.t-title{font-size:11px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:5px;padding-right:36px}
+.t-meta{display:flex;gap:5px;align-items:center}
+.score-pill{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px}
+.s-hi{background:rgba(13,189,110,.15);color:var(--green)}
+.s-md{background:rgba(245,158,11,.15);color:var(--yellow)}
+.s-lo{background:rgba(239,68,68,.15);color:var(--red)}
+.t-bkt{font-size:9px;color:var(--muted)}
+.write-btn2{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:9px;font-family:var(--font);cursor:pointer;opacity:0;transition:opacity .15s}
+.topic-item:hover .write-btn2,.topic-item.active .write-btn2{opacity:1}
+/* MAIN */
+.main{background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.editor-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 18px}
+.tab{padding:13px 14px;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{flex:1;overflow:hidden;display:none}
+.tab-content.active{display:flex;flex-direction:column}
+/* WRITE TAB */
+.write-area{flex:1;overflow-y:auto;padding:20px}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center}
+.placeholder .ico{font-size:42px;opacity:.25}
+.placeholder h2{font-size:18px;font-weight:600;color:var(--muted2)}
+.placeholder p{color:var(--muted);font-size:12px;max-width:300px;line-height:1.6}
+.article-meta{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px;margin-bottom:16px}
+.article-meta h1{font-size:18px;font-weight:700;color:var(--text);margin-bottom:7px;line-height:1.4}
+.meta-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:10px;color:var(--muted2);background:var(--surface2);padding:2px 9px;border-radius:99px;border:1px solid var(--border2)}
+/* Article body rendered preview */
+.article-body{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:20px}
+.article-body h2{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin:24px 0 10px;border-left:3px solid var(--accent);padding-left:12px}
+.article-body h3{font-size:14px;font-weight:600;color:var(--muted2);margin:18px 0 7px}
+.article-body p{margin-bottom:12px;color:#cbd5e1;font-size:13px;line-height:1.8}
+.article-body ul,.article-body ol{padding-left:18px;margin-bottom:12px;color:#cbd5e1;font-size:13px}
+.article-body li{margin-bottom:5px}
+.article-body table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px}
+.article-body th{background:var(--surface2);padding:9px;text-align:left;border:1px solid var(--border2);color:var(--muted2);font-weight:600}
+.article-body td{padding:9px;border:1px solid var(--border);color:#cbd5e1}
+.article-body details{background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;margin-bottom:9px}
+.article-body summary{font-weight:600;cursor:pointer;color:var(--text);list-style:none}
+.article-body summary::-webkit-details-marker{display:none}
+.article-body .callout{background:rgba(33,100,243,.08);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 7px 7px 0;margin:16px 0;color:#93c5fd;font-size:12px}
+.mid-cta-preview{background:var(--surface2);border:1px solid rgba(33,100,243,.3);border-radius:9px;padding:14px 16px;margin:20px 0;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.mid-cta-preview h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mid-cta-preview p{font-size:11px;color:var(--muted2)}
+.mid-cta-btn-prev{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font)}
+.gen-bar{padding:12px 18px;background:var(--surface);border-top:1px solid var(--border);display:flex;gap:9px;align-items:center}
+.gen-status{flex:1;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.spinner{width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none}
+.spinner.on{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-gen{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:background .15s}
+.btn-gen:hover{background:var(--accent2)}
+.btn-gen:disabled{opacity:.45;cursor:not-allowed}
+/* SEO AUDIT TAB */
+.audit-area{flex:1;overflow-y:auto;padding:18px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:20px}
+.score-ring{width:72px;height:72px;position:relative;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+.score-info h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.score-info p{font-size:11px;color:var(--muted2);line-height:1.5}
+.checks{display:flex;flex-direction:column;gap:7px}
+.check-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:10px 13px;display:flex;align-items:center;gap:10px}
+.chk-ico{font-size:14px;flex-shrink:0}
+.chk-lbl{flex:1;font-size:11px}
+.chk-lbl strong{display:block;color:var(--text);margin-bottom:1px}
+.chk-lbl span{color:var(--muted2);font-size:10px}
+.fix-btn2{background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:10px;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.fix-btn2:hover{border-color:var(--yellow);color:var(--yellow)}
+.audit-acts{margin-top:14px;display:flex;gap:9px}
+.btn-auto{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);flex:1;transition:opacity .15s}
+.btn-auto:hover{opacity:.85}
+.btn-auto:disabled{opacity:.45;cursor:not-allowed}
+/* PUBLISH TAB */
+.pub-area{flex:1;overflow-y:auto;padding:18px}
+.pub-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:20px;margin-bottom:14px}
+.pub-card h3{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text)}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:10px;color:var(--muted2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 11px;border-radius:6px;font-size:12px;font-family:var(--font);outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus{border-color:var(--accent)}
+.pub-preview{background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:12px;margin-bottom:12px;font-size:11px}
+.pv-row{display:flex;justify-content:space-between;margin-bottom:5px}
+.pv-lbl{color:var(--muted)}
+.pv-val{color:var(--text);font-weight:500;word-break:break-all;max-width:170px;text-align:right}
+.btn-pub{width:100%;background:var(--green);border:none;border-radius:7px;color:#fff;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+.btn-pub:hover{opacity:.85}
+.btn-pub:disabled{opacity:.45;cursor:not-allowed}
+.sched-row{display:flex;gap:8px}
+.sched-row input{flex:1}
+.btn-sched{background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);padding:8px 13px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.btn-sched:hover{border-color:var(--accent);color:var(--accent)}
+.pub-log{font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--muted2);background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:12px;max-height:150px;overflow-y:auto;white-space:pre-wrap}
+.log-ok{color:var(--green)}
+.log-err{color:var(--red)}
+.log-info{color:var(--accent)}
+/* RIGHT PANEL */
+.right-panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border)}
+.ptab{flex:1;padding:11px;font-size:10px;font-weight:600;text-align:center;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:all .15s;border-bottom:2px solid transparent}
+.ptab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.panel-content{flex:1;overflow-y:auto;padding:14px;display:none}
+.panel-content.active{display:block}
+/* SETTINGS */
+.sg{margin-bottom:18px}
+.sg h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px}
+.si{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 11px;border-radius:6px;font-size:11px;font-family:var(--font);outline:none;margin-bottom:7px;transition:border-color .15s}
+.si:focus{border-color:var(--accent)}
+.si[type=password]{letter-spacing:2px}
+.si[type=password]::placeholder{letter-spacing:0}
+.btn-save{width:100%;background:var(--accent);border:none;border-radius:6px;color:#fff;padding:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px}
+.sysprompt{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:9px 11px;border-radius:6px;font-size:10px;font-family:var(--mono);outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:7px;transition:border-color .15s}
+.sysprompt:focus{border-color:var(--accent)}
+/* HISTORY */
+.hist-item{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:7px;cursor:pointer;transition:border-color .15s}
+.hist-item:hover{border-color:var(--accent)}
+.h-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.4}
+.h-meta{font-size:9px;color:var(--muted);display:flex;gap:7px}
+.h-pub{color:var(--green)!important}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:10px 16px;font-size:12px;color:var(--text);z-index:9999;display:flex;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(0,0,0,.4);transform:translateY(70px);opacity:0;transition:all .3s}
 .toast.show{transform:translateY(0);opacity:1}
-.toast.ok{border-color:rgba(13,189,110,.4);background:rgba(13,189,110,.1)}
-.toast.err{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .app{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .preview-wrap{grid-template-columns:1fr}
-  .topics-grid{grid-template-columns:1fr}
-}
+.toast.tok{border-color:rgba(13,189,110,.4)}
+.toast.terr{border-color:rgba(239,68,68,.4)}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+/* EMPTY */
+.empty{text-align:center;padding:28px 14px;color:var(--muted);font-size:11px}
+.empty .e-ico{font-size:28px;margin-bottom:9px;opacity:.35}
 </style>
 </head>
 <body>
-
 <div class="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#2164F3" stroke-width="2"/><path d="M6 10.5l3 3 5-6" stroke="#2164F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Talent<span class="logo-accent">Buddy</span> SEO Agent
+  </div>
+  <span class="badge">v2</span>
+  <div class="topbar-right">
+    <button class="btn-sm-top" onclick="fetchTopics()">⟳ Refresh Topics</button>
+    <button class="btn-sm-top" onclick="showTab('publish')">⬆ Publish</button>
+  </div>
+</header>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="logo-wrap">
-    <div class="logo-dot"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-    <div><div class="logo-name">TalentBuddy</div><div class="logo-sub">SEO Agent · Groq</div></div>
+  <div class="sb-header">
+    <h3>Topics</h3>
+    <span id="tc" style="font-size:9px;color:var(--muted)">0 topics</span>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Workflow</div>
-    <div class="nav-item active" onclick="showScreen('topics')" id="nav-topics">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Topic Discovery
-    </div>
-    <div class="nav-item" onclick="showScreen('published')" id="nav-published">
-      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-      Published Posts
-    </div>
+  <div class="bucket-sel">
+    <select id="bucket-filter" onchange="filterTopics()">
+      <option value="all">All Buckets</option>
+      <option value="core">Core Job Search</option>
+      <option value="career">Career Stages</option>
+      <option value="layoff">Layoffs & Transition</option>
+      <option value="mnc">MNC Hiring</option>
+      <option value="startup">Startup Hiring</option>
+      <option value="ai">AI & Future of Work</option>
+      <option value="industry">Industry Specific</option>
+      <option value="culture">Workplace Culture</option>
+      <option value="salary">Salary & Negotiation</option>
+      <option value="skills">Soft Skills</option>
+      <option value="location">Location Specific</option>
+      <option value="overseas">Overseas Jobs</option>
+    </select>
   </div>
-
-  <div class="sidebar-footer">
-    <button class="cfg-btn" onclick="showScreen('config')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
-      Settings & API Keys
-    </button>
+  <div class="topic-acts">
+    <button class="btn-sm2" onclick="fetchTopics()">🔍 Discover</button>
+    <button class="btn-sm2 pri" onclick="seedTopics()">+ Seed Topics</button>
+  </div>
+  <div class="topics-list" id="topics-list">
+    <div class="empty"><div class="e-ico">📋</div>Click "Seed Topics" to load pre-scored ideas</div>
   </div>
 </aside>
 
 <!-- MAIN -->
 <main class="main">
-  <div class="topbar">
-    <div>
-      <div class="topbar-title">SEO Content Publisher</div>
-      <div class="topbar-sub">vaswinraaju-png / talent_buddy · branch: main</div>
-    </div>
-    <div class="status-pill"><span class="status-dot"></span>Agent Ready</div>
+  <div class="editor-tabs">
+    <div class="tab active" onclick="showTab('write')" id="tab-write">✍️ Write</div>
+    <div class="tab" onclick="showTab('audit')" id="tab-audit">📊 SEO Audit</div>
+    <div class="tab" onclick="showTab('publish')" id="tab-publish">🚀 Publish</div>
   </div>
 
-  <div class="content">
-
-    <!-- CONFIG SCREEN -->
-    <div class="screen active" id="screen-config">
-      <div class="config-panel">
-        <div class="cfg-title">Configuration</div>
-        <div class="cfg-desc">API keys saved in browser localStorage only — never sent anywhere except the respective APIs.</div>
-        <div class="field">
-          <label>Groq API Key</label>
-          <input type="password" id="cfg-anthropic" placeholder="gsk_..." autocomplete="off">
-          <div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:5px">Get free key at console.groq.com · No credit card needed</div>
-        </div>
-        <div class="field">
-          <label>AI Model</label>
-          <select id="cfg-model">
-            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B (Recommended)</option>
-            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Faster)</option>
-            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-            <option value="gemma2-9b-it">Gemma 2 9B</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>GitHub Personal Access Token</label>
-          <input type="password" id="cfg-ghpat" placeholder="ghp_..." value="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">
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>GitHub Repo Owner</label>
-            <input type="text" id="cfg-owner" placeholder="vaswinraaju-png" value="vaswinraaju-png">
-          </div>
-          <div class="field">
-            <label>Repo Name</label>
-            <input type="text" id="cfg-repo" placeholder="talent_buddy" value="talent_buddy">
-          </div>
-        </div>
-        <div class="field">
-          <label>Branch</label>
-          <input type="text" id="cfg-branch" placeholder="main" value="main">
-        </div>
-        <div class="field">
-          <label>Site Base URL (for sitemap)</label>
-          <input type="text" id="cfg-baseurl" placeholder="https://talentbuddy.xyz" value="https://talentbuddy.xyz">
-        </div>
-        <button class="save-btn" onclick="saveConfig()">Save & Continue →</button>
+  <!-- WRITE -->
+  <div class="tab-content active" id="content-write">
+    <div class="write-area" id="write-area">
+      <div class="placeholder" id="write-placeholder">
+        <div class="ico">✍️</div>
+        <h2>Ready to write</h2>
+        <p>Select a topic from the sidebar and click Write, or hit Generate below.</p>
       </div>
+      <div id="article-output" style="display:none"></div>
     </div>
-
-    <!-- TOPICS SCREEN -->
-    <div class="screen" id="screen-topics">
-      <div class="topics-header">
-        <div class="topics-htext">
-          <div class="screen-title">Topic Discovery</div>
-          <div class="screen-sub">AI scans your existing posts, finds keyword gaps, and surfaces high-traffic opportunities.</div>
-        </div>
-        <button class="discover-btn" id="discoverBtn" onclick="discoverTopics()">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          Find Topics
-        </button>
+    <div class="gen-bar">
+      <div class="gen-status">
+        <div class="spinner" id="gen-spinner"></div>
+        <span id="gen-status-text">Select a topic to generate</span>
       </div>
-      <div id="topics-content">
-        <div class="empty-state">Click "Find Topics" to have the AI research keyword gaps for TalentBuddy and suggest 6 article ideas.</div>
-      </div>
+      <button class="btn-gen" id="btn-gen" onclick="generateArticle()" disabled>Generate Article</button>
     </div>
+  </div>
 
-    <!-- WRITING SCREEN -->
-    <div class="screen" id="screen-writing">
-      <div class="thinking-wrap">
-        <div class="thinking-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/><path d="M12 6v6l4 2"/></svg>
+  <!-- AUDIT -->
+  <div class="tab-content" id="content-audit">
+    <div class="audit-area">
+      <div id="audit-empty" class="placeholder">
+        <div class="ico">📊</div>
+        <h2>No article yet</h2>
+        <p>Generate an article first, then run the SEO audit.</p>
+      </div>
+      <div id="audit-content" style="display:none">
+        <div class="score-card">
+          <div class="score-ring">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="29" fill="none" stroke="var(--border2)" stroke-width="7"/>
+              <circle cx="36" cy="36" r="29" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="182" id="score-arc" stroke-dashoffset="91"/>
+            </svg>
+            <div class="score-num" id="score-num">0</div>
+          </div>
+          <div class="score-info">
+            <h3 id="score-label">SEO Score</h3>
+            <p id="score-desc">Generate an article to audit</p>
+          </div>
         </div>
-        <div class="thinking-title">Agent is writing…</div>
-        <div class="thinking-sub" id="writingTopic">Preparing your SEO article</div>
-        <div class="steps-list" id="stepsList">
-          <div class="step-row" id="step-1"><div class="step-num pending" id="sn-1">1</div><div class="step-text">Analysing keyword intent & search landscape</div></div>
-          <div class="step-row" id="step-2"><div class="step-num pending" id="sn-2">2</div><div class="step-text">Building SEO outline & H2 structure</div></div>
-          <div class="step-row" id="step-3"><div class="step-num pending" id="sn-3">3</div><div class="step-text">Writing full article body (~1500 words)</div></div>
-          <div class="step-row" id="step-4"><div class="step-num pending" id="sn-4">4</div><div class="step-text">Generating meta description & schema markup</div></div>
-          <div class="step-row" id="step-5"><div class="step-num pending" id="sn-5">5</div><div class="step-text">Assembling TalentBuddy HTML template</div></div>
+        <div class="checks" id="audit-checks"></div>
+        <div class="audit-acts">
+          <button class="btn-auto" id="btn-auto" onclick="autoOptimise()">⚡ Auto-Optimise All Issues</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- PREVIEW SCREEN -->
-    <div class="screen" id="screen-preview">
-      <div class="preview-wrap">
-        <div class="preview-main">
-          <div class="preview-toolbar">
-            <div class="preview-dot" style="background:#ff5f57"></div>
-            <div class="preview-dot" style="background:#febc2e"></div>
-            <div class="preview-dot" style="background:#28c840"></div>
-            <div class="preview-url" id="previewUrl">talentbuddy.xyz/blog/...</div>
-          </div>
-          <div class="preview-iframe-wrap">
-            <div class="article-preview" id="articlePreview"></div>
+  <!-- PUBLISH -->
+  <div class="tab-content" id="content-publish">
+    <div class="pub-area">
+      <div class="pub-card">
+        <h3>📦 Publish to GitHub</h3>
+        <div class="fg"><label>Article Slug</label><input type="text" id="pub-slug" placeholder="how-to-get-job-india-2026" oninput="updatePubPreview()"></div>
+        <div class="fg"><label>Meta Description</label><input type="text" id="pub-meta" placeholder="150–160 char meta description" oninput="updatePubPreview()"></div>
+        <div class="pub-preview" id="pub-preview">
+          <div class="pv-row"><span class="pv-lbl">URL</span><span class="pv-val" id="pv-url">—</span></div>
+          <div class="pv-row"><span class="pv-lbl">Repo</span><span class="pv-val" id="pv-repo">—</span></div>
+          <div class="pv-row"><span class="pv-lbl">Status</span><span class="pv-val" id="pv-status">Not published</span></div>
+        </div>
+        <div class="fg"><label>Schedule (optional)</label>
+          <div class="sched-row">
+            <input type="datetime-local" id="pub-schedule">
+            <button class="btn-sched" onclick="schedulePublish()">🕐 Schedule</button>
           </div>
         </div>
-        <div class="preview-side">
-          <div class="meta-card">
-            <div class="meta-card-title">Article Metadata</div>
-            <div class="meta-row"><span class="meta-key">Slug</span><span class="meta-val mono" id="metaSlug">—</span></div>
-            <div class="meta-row"><span class="meta-key">Target Keyword</span><span class="meta-val" id="metaKeyword">—</span></div>
-            <div class="meta-row"><span class="meta-key">Word Count</span><span class="meta-val green" id="metaWords">—</span></div>
-            <div class="meta-row"><span class="meta-key">Reading Time</span><span class="meta-val" id="metaRead">—</span></div>
-            <div class="meta-row"><span class="meta-key">Internal Links</span><span class="meta-val" id="metaLinks">—</span></div>
-          </div>
-          <div class="meta-card">
-            <div class="meta-card-title">Meta Description</div>
-            <div style="font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.6" id="metaDesc">—</div>
-          </div>
-          <div class="meta-card">
-            <div class="meta-card-title">Publish Destination</div>
-            <div class="meta-row"><span class="meta-key">File</span><span class="meta-val mono" id="metaFile">—</span></div>
-            <div class="meta-row"><span class="meta-key">Repo</span><span class="meta-val">vaswinraaju-png/talent_buddy</span></div>
-            <div class="meta-row"><span class="meta-key">Branch</span><span class="meta-val">main</span></div>
-            <div class="meta-row"><span class="meta-key">Sitemap</span><span class="meta-val green">Will be updated ✓</span></div>
-          </div>
-          <button class="publish-btn" id="publishBtn" onclick="publishArticle()">
-            <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            Publish to GitHub
-          </button>
-          <button class="back-btn" onclick="showScreen('topics')">← Back to Topics</button>
-          <div class="log-wrap" id="publishLog" style="display:none"></div>
-        </div>
+        <button class="btn-pub" id="btn-pub" onclick="publishNow()">🚀 Publish Now</button>
+      </div>
+      <div class="pub-card">
+        <h3>📋 Publish Log</h3>
+        <div class="pub-log" id="pub-log">Waiting for publish action...</div>
       </div>
     </div>
-
-    <!-- PUBLISHED SCREEN -->
-    <div class="screen" id="screen-published">
-      <div style="margin-bottom:24px">
-        <div class="screen-title" style="font-family:var(--serif);font-size:1.6rem;font-weight:600;margin-bottom:6px">Published Posts</div>
-        <div style="font-size:.82rem;color:rgba(255,255,255,.4)">All articles published from this agent to your GitHub repo.</div>
-      </div>
-      <div id="publishedList"></div>
-    </div>
-
-    <!-- SUCCESS SCREEN -->
-    <div class="screen" id="screen-success">
-      <div class="success-wrap">
-        <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="success-title">Published Live! 🎉</div>
-        <div class="success-sub" id="successMsg">Your article has been committed to GitHub. Vercel will deploy it in ~30 seconds.</div>
-        <a class="live-link" id="liveLink" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          View Live Article
-        </a>
-        <button class="new-btn" onclick="showScreen('topics')">Write Another Article</button>
-      </div>
-    </div>
-
-  </div><!-- /content -->
+  </div>
 </main>
-</div><!-- /app -->
+
+<!-- RIGHT PANEL -->
+<aside class="right-panel">
+  <div class="panel-tabs">
+    <div class="ptab active" onclick="showPanel('settings')" id="ptab-settings">⚙️ Config</div>
+    <div class="ptab" onclick="showPanel('history')" id="ptab-history">📚 History</div>
+  </div>
+  <div class="panel-content active" id="panel-settings">
+    <div class="sg"><h4>API Keys</h4>
+      <input type="password" class="si" id="s-openai" placeholder="OpenAI API Key (sk-...)">
+      <input type="password" class="si" id="s-github" placeholder="GitHub PAT (ghp_...)">
+    </div>
+    <div class="sg"><h4>GitHub Repo</h4>
+      <input type="text" class="si" id="s-repo" placeholder="username/repo">
+      <input type="text" class="si" id="s-branch" placeholder="Branch (main)">
+    </div>
+    <div class="sg"><h4>Blog Config</h4>
+      <input type="text" class="si" id="s-domain" placeholder="Domain (talentbuddy.xyz)">
+      <input type="text" class="si" id="s-blogpath" placeholder="Blog path (blog/)">
+      <input type="text" class="si" id="s-phone" placeholder="CTA Phone (+91 99802 91663)">
+    </div>
+    <div class="sg"><h4>System Prompt Override</h4>
+      <textarea class="sysprompt" id="s-sysprompt" placeholder="Custom generation instructions..."></textarea>
+    </div>
+    <button class="btn-save" onclick="saveSettings()">Save Settings</button>
+  </div>
+  <div class="panel-content" id="panel-history">
+    <div id="history-list"><div class="empty"><div class="e-ico">📚</div>No articles generated yet</div></div>
+  </div>
+</aside>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── STATE ── */
-var cfg = {};
-var currentArticle = {};
-var publishedPosts = JSON.parse(localStorage.getItem('tb_published') || '[]');
-
-/* ── EXISTING BLOG POSTS (to detect gaps) ── */
-var EXISTING_POSTS = [
-  'Why You\'re Not Getting Interview Calls',
-  'ATS Resume Rejection: Why Your CV Gets Filtered Out',
-  'The Hidden Job Market in India: How 70% of Jobs Are Filled Before You See Them',
-  '10 Resume Mistakes Freshers Make That Guarantee Rejection',
-  'How to Get a Job in India Without Referrals or Connections'
-];
-
-var CONTENT_BUCKETS = [
-  'Core Job Search: interview prep, resume writing, ATS, LinkedIn, cover letters, job portals, recruiter outreach, salary negotiation',
-  'Career Stage: fresher campus placements, first job, internship to full-time, career change at 30, returning after gap, women returning after maternity',
-  'Layoffs and Crisis: what to do after layoff, layoff survival India, explaining layoff in interview, severance FnF, mental health after job loss, tech layoffs 2026',
-  'MNC Hiring: how TCS Infosys Wipro HCL Accenture hire, MNC referral programs, walk-in drives, hiring seasons India, background verification, MNC vs startup',
-  'Startup Hiring: how startups hire, finding startup jobs India, ESOP equity, startup culture fit, Series A B funding job security, startup job boards',
-  'AI and Future of Work: AI replacing jobs which roles safe, skills stay relevant 2026, AI tools for job seekers, ChatGPT job search, prompt engineering career, AI in hiring screening',
-  'Industry Specific: IT software jobs, product management, data analyst, digital marketing, finance BFSI, healthcare pharma, remote hybrid jobs India',
-  'Workplace and Work Culture: remote work jobs India, WFH vs office, toxic workplace, bad manager, work-life balance, moonlighting policy, notice period negotiation',
-  'Salary and Compensation: average salaries by role and city India, CTC vs in-hand, variable pay bonus, how to ask for raise, salary hike during job switch',
-  'Soft Skills and Personal Brand: LinkedIn personal brand, communication skills interviews, body language, networking India, references recommendations',
-  'Location Specific: jobs in Bangalore, Hyderabad, Mumbai, Chennai, Pune, Delhi NCR, tier-2 city job market, relocating for work India',
-  'Overseas and Global: job abroad from India, Germany opportunity card Indians, Canada PR jobs, Australia jobs Indians, Gulf jobs, remote jobs global companies'
-];
-
-/* ── INIT ── */
-window.onload = function() {
-  loadConfig();
-  renderPublished();
-  // If config looks good, go straight to topics
-  // Pre-fill config fields from saved values
-  if (cfg.anthropicKey) document.getElementById('cfg-anthropic').value = cfg.anthropicKey;
-  if (cfg.ghPat && cfg.anthropicKey) {
-    showScreen('topics');
-  } else {
-    showScreen('config');
-  }
+// ── STATE ─────────────────────────────────────────────────────────
+var S = {
+  topics: [],
+  activeTopic: null,
+  article: null,
+  audit: null,
+  settings: {},
+  history: [],
+  schedTimer: null
 };
 
-function loadConfig() {
-  cfg.anthropicKey = localStorage.getItem('tb_anthropic') || '';
-  cfg.model   = localStorage.getItem('tb_model')|| 'llama-3.3-70b-versatile';
-  cfg.ghPat   = localStorage.getItem('tb_ghpat') || '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';
-  cfg.owner   = localStorage.getItem('tb_owner')|| 'vaswinraaju-png';
-  cfg.repo    = localStorage.getItem('tb_repo') || 'talent_buddy';
-  cfg.branch  = localStorage.getItem('tb_branch')|| 'main';
-  cfg.baseUrl = localStorage.getItem('tb_baseurl')|| 'https://talentbuddy.xyz';
-}
+var BUCKETS = {
+  core:'Core Job Search',career:'Career Stages',layoff:'Layoffs & Transition',
+  mnc:'MNC Hiring',startup:'Startup Hiring',ai:'AI & Future of Work',
+  industry:'Industry Specific',culture:'Workplace Culture',salary:'Salary & Negotiation',
+  skills:'Soft Skills',location:'Location Specific',overseas:'Overseas Jobs'
+};
 
-function saveConfig() {
-  cfg.anthropicKey = document.getElementById('cfg-anthropic').value.trim();
-  cfg.model   = document.getElementById('cfg-model').value;
-  cfg.ghPat   = document.getElementById('cfg-ghpat').value.trim();
-  cfg.owner   = document.getElementById('cfg-owner').value.trim();
-  cfg.repo    = document.getElementById('cfg-repo').value.trim();
-  cfg.branch  = document.getElementById('cfg-branch').value.trim();
-  cfg.baseUrl = document.getElementById('cfg-baseurl').value.trim();
-  localStorage.setItem('tb_anthropic', cfg.anthropicKey);
-  localStorage.setItem('tb_model', cfg.model);
-  localStorage.setItem('tb_ghpat', cfg.ghPat);
-  localStorage.setItem('tb_owner', cfg.owner);
-  localStorage.setItem('tb_repo', cfg.repo);
-  localStorage.setItem('tb_branch', cfg.branch);
-  localStorage.setItem('tb_baseurl', cfg.baseUrl);
-  showToast('Settings saved ✓', 'ok');
-  showScreen('topics');
-}
+var SEED_TOPICS = [
+  {id:1,title:'Why Your ATS-Optimised Resume Still Gets Rejected in 2026',bucket:'core',intent:90,competition:40,relevance:95},
+  {id:2,title:'Hidden Job Market India: 67% of IT Jobs Never Get Posted Publicly',bucket:'core',intent:85,competition:35,relevance:90},
+  {id:3,title:'How to Get Interview Calls Without Referrals: Step-by-Step 2026 Guide',bucket:'core',intent:88,competition:45,relevance:92},
+  {id:4,title:'Resume Mistakes Freshers Make That Kill Their Chances in 3 Seconds',bucket:'career',intent:82,competition:55,relevance:88},
+  {id:5,title:'Laid Off From IT? The Exact 30-Day Reactivation Plan That Works in 2026',bucket:'layoff',intent:92,competition:30,relevance:95},
+  {id:6,title:'MNC vs Startup: Which Pays 40% More for Mid-Level Roles in India 2026',bucket:'mnc',intent:78,competition:50,relevance:85},
+  {id:7,title:'How AI Is Killing Entry-Level Jobs: What Skills Actually Protect You',bucket:'ai',intent:88,competition:60,relevance:87},
+  {id:8,title:'Bangalore vs Pune vs Hyderabad: Where Should You Move for IT Jobs in 2026',bucket:'location',intent:75,competition:40,relevance:83},
+  {id:9,title:'How to Negotiate Salary After a Layoff Without Losing the Offer',bucket:'salary',intent:85,competition:45,relevance:90},
+  {id:10,title:'Germany Ausbildung vs Canada PR: Which Immigration Route Pays Off Faster',bucket:'overseas',intent:80,competition:35,relevance:86},
+  {id:11,title:'What Recruiters Actually See When They Open Your LinkedIn Profile',bucket:'core',intent:83,competition:55,relevance:88},
+  {id:12,title:'3-Year Experience Trap: Why Mid-Level Engineers Struggle Most to Switch Jobs',bucket:'career',intent:87,competition:38,relevance:91},
+  {id:13,title:'Mass Layoffs India 2026: Which Sectors Are Hiring and Which Are Freezing',bucket:'layoff',intent:90,competition:42,relevance:93},
+  {id:14,title:'How to Get a Job at Infosys TCS Wipro Without Campus Placement',bucket:'mnc',intent:79,competition:60,relevance:85},
+  {id:15,title:'Startup Equity vs Big Tech Salary: The Math Nobody Shows You in India',bucket:'startup',intent:76,competition:30,relevance:82},
+  {id:16,title:'ChatGPT Cannot Replace These 12 Skills: Build Them Before 2027',bucket:'ai',intent:86,competition:65,relevance:88},
+  {id:17,title:'Pharmaceutical Industry Jobs India 2026: Entry Points and Salary Bands',bucket:'industry',intent:72,competition:28,relevance:80},
+  {id:18,title:'Toxic Workplace Signs You Ignore During Interviews and How to Spot Them',bucket:'culture',intent:80,competition:50,relevance:84},
+  {id:19,title:'Cold Messaging Recruiters on LinkedIn: Templates That Get 34% Reply Rate',bucket:'skills',intent:88,competition:45,relevance:91},
+  {id:20,title:'Dubai Job Market for Indians 2026: What They Actually Pay vs What They Advertise',bucket:'overseas',intent:83,competition:38,relevance:87}
+];
 
-/* ── NAVIGATION ── */
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
-  document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
-  var navEl = document.getElementById('nav-' + name);
-  if (navEl) navEl.classList.add('active');
-}
+// ── INIT ──────────────────────────────────────────────────────────
+window.onload = function() {
+  loadSettings();
+  loadHistory();
+  renderHistory();
+};
 
-/* ── TOPIC DISCOVERY ── */
-async function discoverTopics() {
-  var btn = document.getElementById('discoverBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Researching…';
-  document.getElementById('topics-content').innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' + Array(6).fill('<div style="height:180px;border-radius:14px" class="skeleton"></div>').join('') + '</div>';
-
-  var prompt = `You are an expert SEO strategist for TalentBuddy (talentbuddy.xyz), an Indian job placement services company.
-
-WHAT TALENTBUDDY DOES: Paid placement service helping Indian job seekers get interview calls. Services: profile analysis, ATS-optimised CV, 5+ job search strategies, live tracking dashboard, recruiter outreach. CTA: book a free 30-min discovery call at +91 99802 91663.
-
-EXISTING POSTS (do NOT repeat these or close variants):
-${EXISTING_POSTS.map(function(p,i){return (i+1)+'. '+p}).join('\n')}
-
-CONTENT BUCKETS (pick topics from at least 4 different buckets for variety):
-${CONTENT_BUCKETS.map(function(b,i){return (i+1)+'. '+b}).join('\n')}
-
-RULES FOR TOPIC SELECTION:
-- Each topic must naturally lead to TalentBuddy placement service CTA
-- India-specific angles: mention cities, Indian companies, Indian job market
-- Use 2026 in titles where year is relevant, never 2024 or 2025
-- No em dashes in titles
-- High search volume India keywords only
-
-Respond ONLY with a valid JSON array of exactly 6 objects. No preamble, no markdown fences, no backticks. Keep all string values SHORT (max 100 chars each). Each object must have exactly these keys:
-- title: string (H1, max 70 chars, include primary keyword)
-- keyword: string (primary keyword, 3-5 words)
-- tag: string (bucket name, 1-3 words)
-- intent: string ("Informational" or "Commercial")
-- gap: string (content gap reason, max 80 chars)
-- reason: string (why drives traffic and leads, max 100 chars)
-- vol: string (India monthly searches estimate, e.g. "15,000/mo")
-- slug: string (kebab-case, no stop words, no .html, max 50 chars)`;
-
-  try {
-    var data = await callNIM(prompt, 2000);
-    var text = data.choices[0].message.content.trim();
-    // Strip markdown fences
-    text = text.replace(/```json|```/g, '').trim();
-    // Attempt to repair truncated JSON by closing open structures
-    try {
-      var topics = JSON.parse(text);
-      renderTopics(topics);
-    } catch(parseErr) {
-      // Try to recover: find last complete object and close the array
-      var lastBrace = text.lastIndexOf('}');
-      if (lastBrace > 0) {
-        var repaired = text.substring(0, lastBrace + 1) + ']';
-        // Make sure it starts with [
-        if (!repaired.trim().startsWith('[')) repaired = '[' + repaired;
-        var topics = JSON.parse(repaired);
-        renderTopics(topics);
-      } else {
-        throw parseErr;
-      }
-    }
-  } catch(e) {
-    // Fallback topics if API fails
-    renderTopics(getFallbackTopics());
-    showToast('API error: ' + e.message, 'err');
-    console.error('Topic discovery error:', e);
+// ── SETTINGS ──────────────────────────────────────────────────────
+function loadSettings() {
+  var saved = localStorage.getItem('tb_seo_v2');
+  if (saved) {
+    S.settings = JSON.parse(saved);
+    document.getElementById('s-openai').value = S.settings.openai || '';
+    document.getElementById('s-github').value = S.settings.github || '';
+    document.getElementById('s-repo').value = S.settings.repo || 'vaswinraaju-png/talent_buddy';
+    document.getElementById('s-branch').value = S.settings.branch || 'main';
+    document.getElementById('s-domain').value = S.settings.domain || 'talentbuddy.xyz';
+    document.getElementById('s-blogpath').value = S.settings.blogpath || 'blog';
+    document.getElementById('s-phone').value = S.settings.phone || '+91 99802 91663';
+    document.getElementById('s-sysprompt').value = S.settings.sysprompt || '';
   }
-  btn.disabled = false;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Refresh Topics';
 }
 
-function getFallbackTopics() {
-  return [
-    {title:"How to Write a LinkedIn Summary That Gets You Noticed by Recruiters",keyword:"linkedin summary for job seekers india",tag:"LinkedIn",intent:"Informational",gap:"No LinkedIn profile optimisation content exists yet",reason:"LinkedIn profile tips are searched millions of times monthly by Indian professionals.",vol:"12,000–18,000/mo",slug:"linkedin-summary-tips-india"},
-    {title:"Salary Negotiation Script: How to Ask for More Money in India",keyword:"salary negotiation tips india",tag:"Career Growth",intent:"Informational",gap:"No salary or compensation guidance content",reason:"Salary negotiation is a top searched topic by working professionals across India.",vol:"20,000–30,000/mo",slug:"salary-negotiation-tips-india"},
-    {title:"How to Switch Careers in India at 30: A Complete Guide",keyword:"career change at 30 india",tag:"Career Switch",intent:"Informational",gap:"Existing posts don't address mid-career switchers specifically",reason:"Career transition anxiety peaks at 28-35 — this is a high-intent audience for placement services.",vol:"8,000–14,000/mo",slug:"career-change-at-30-india"},
-    {title:"Best Job Portals in India 2025: Which Ones Actually Work",keyword:"best job portals india 2025",tag:"Job Search",intent:"Commercial",gap:"No comparison or review of job platforms",reason:"High-traffic commercial query from active job seekers evaluating tools.",vol:"25,000–40,000/mo",slug:"best-job-portals-india-2025"},
-    {title:"How to Get a Job in Bangalore: The 2025 Tech Job Market Guide",keyword:"how to get job in bangalore",tag:"Location Guide",intent:"Informational",gap:"No city-specific job search content",reason:"Bangalore tech job searches are extremely high volume from tier-2 city candidates relocating.",vol:"15,000–22,000/mo",slug:"how-to-get-job-in-bangalore"},
-    {title:"Interview Preparation Guide: How to Crack HR and Technical Rounds",keyword:"interview preparation india",tag:"Interview Prep",intent:"Informational",gap:"No interview coaching or prep content",reason:"Interview prep is one of the highest volume career search topics in India.",vol:"35,000–50,000/mo",slug:"interview-preparation-guide-india"}
-  ];
+function saveSettings() {
+  S.settings = {
+    openai: document.getElementById('s-openai').value.trim(),
+    github: document.getElementById('s-github').value.trim(),
+    repo: document.getElementById('s-repo').value.trim() || 'vaswinraaju-png/talent_buddy',
+    branch: document.getElementById('s-branch').value.trim() || 'main',
+    domain: document.getElementById('s-domain').value.trim() || 'talentbuddy.xyz',
+    blogpath: document.getElementById('s-blogpath').value.trim().replace(/\/$/, '') || 'blog',
+    phone: document.getElementById('s-phone').value.trim() || '+91 99802 91663',
+    sysprompt: document.getElementById('s-sysprompt').value.trim()
+  };
+  localStorage.setItem('tb_seo_v2', JSON.stringify(S.settings));
+  toast('Settings saved ✓', 'tok');
+  updatePubPreview();
 }
+
+// ── TOPICS ────────────────────────────────────────────────────────
+function seedTopics() {
+  S.topics = SEED_TOPICS.map(function(t){return Object.assign({},t)});
+  filterTopics();
+  toast('Loaded ' + S.topics.length + ' topics', 'tok');
+}
+
+function filterTopics() {
+  var b = document.getElementById('bucket-filter').value;
+  var list = b === 'all' ? S.topics : S.topics.filter(function(t){return t.bucket===b});
+  renderTopics(list);
+}
+
+function score(t) { return Math.round(t.intent*0.4 + t.relevance*0.4 + (100-t.competition)*0.2); }
 
 function renderTopics(topics) {
-  var html = '<div class="topics-grid">';
-  topics.forEach(function(t, i) {
-    html += '<div class="topic-card" data-idx="'+i+'">' +
-      '<div class="tc-tag">'+escHtml(t.tag)+'</div>' +
-      '<div class="tc-title">'+escHtml(t.title)+'</div>' +
-      '<div class="tc-keyword">🎯 '+escHtml(t.keyword)+'</div>' +
-      '<div class="tc-meta">' +
-        '<span class="tc-badge intent">'+escHtml(t.intent)+'</span>' +
-        '<span class="tc-badge vol">'+escHtml(t.vol)+'</span>' +
-        '<span class="tc-badge gap">Gap ✓</span>' +
-      '</div>' +
-      '<div class="tc-reason">'+escHtml(t.reason)+'</div>' +
-      '<button class="write-btn" onclick=\'writeArticle('+JSON.stringify(t)+')\'>Write This Article →</button>' +
-    '</div>';
-  });
-  html += '</div>';
-  document.getElementById('topics-content').innerHTML = html;
-}
-
-/* ── WRITE ARTICLE ── */
-async function writeArticle(topic) {
-  currentArticle.topic = topic;
-  showScreen('writing');
-  document.getElementById('writingTopic').textContent = '"' + topic.title + '"';
-
-  // Reset steps
-  for (var i=1; i<=5; i++) {
-    document.getElementById('sn-'+i).className = 'step-num pending';
-    document.getElementById('sn-'+i).textContent = i;
-    document.getElementById('step-'+i).classList.remove('active');
-  }
-
-  await setStep(1, true);
-  await delay(900);
-  await setStep(1, false, true);
-
-  await setStep(2, true);
-  await delay(700);
-  await setStep(2, false, true);
-
-  await setStep(3, true);
-
-  var articleHTML = '';
-  try {
-    articleHTML = await generateArticle(topic);
-  } catch(e) {
-    showToast('Article generation failed: ' + e.message, 'err');
-    showScreen('topics');
-    return;
-  }
-  await setStep(3, false, true);
-
-  await setStep(4, true);
-  var metaDesc = extractMetaDesc(articleHTML, topic);
-  await delay(600);
-  await setStep(4, false, true);
-
-  await setStep(5, true);
-  var finalHTML = wrapInTemplate(articleHTML, topic, metaDesc);
-  await delay(500);
-  await setStep(5, false, true);
-
-  // Store
-  currentArticle.html = finalHTML;
-  currentArticle.metaDesc = metaDesc;
-  currentArticle.slug = topic.slug;
-  currentArticle.title = topic.title;
-  currentArticle.keyword = topic.keyword;
-
-  // Count words
-  var stripped = articleHTML.replace(/<[^>]+>/g, ' ');
-  var words = stripped.trim().split(/\s+/).length;
-  currentArticle.words = words;
-
-  await delay(400);
-  showPreview();
-}
-
-function setStep(n, active, done) {
-  var el = document.getElementById('step-'+n);
-  var sn = document.getElementById('sn-'+n);
-  if (active) {
-    el.classList.add('active');
-    sn.className = 'step-num running';
-    sn.textContent = '↻';
-  } else if (done) {
-    el.classList.remove('active');
-    sn.className = 'step-num done';
-    sn.textContent = '✓';
-  }
-  return Promise.resolve();
-}
-
-async function generateArticle(topic) {
-  var internalLinks = {
-    'ats': '/blog/ats-resume-rejection.html',
-    'interview calls': '/blog/why-no-interview-calls.html',
-    'hidden job market': '/blog/hidden-job-market-india.html',
-    'resume mistakes': '/blog/resume-mistakes-freshers.html',
-    'without referrals': '/blog/get-job-without-referrals.html'
-  };
-
-  var prompt = `You are an expert SEO content writer for TalentBuddy (talentbuddy.xyz), India's job placement services company. TalentBuddy helps Indian job seekers get interview calls through ATS-optimised CVs, recruiter outreach, and proven strategies. Every article must drive readers to book a FREE 30-min discovery call at +91 99802 91663.
-
-ARTICLE TO WRITE:
-Title: ${topic.title}
-Primary keyword: "${topic.keyword}"
-Category: ${topic.tag}
-Intent: ${topic.intent}
-
-STRICT RULES - follow every single one:
-1. Length: 1400 to 1600 words
-2. Primary keyword must appear in: first 100 words, at least 2 H2 headings
-3. H2s and H3s must be searchable phrases with keyword variations, not clever wordplay
-4. NEVER use em dashes. Use commas or colons instead. This is a hard rule.
-5. No filler openers like 'In today's competitive world' or 'Are you struggling with'
-6. Short paragraphs only. Maximum 2 to 3 sentences per paragraph.
-7. Tone: conversational but authoritative. Match this TalentBuddy voice: 'The frustrating truth? The problem is almost never your qualifications. It's your strategy.'
-8. India-specific throughout: mention Naukri, LinkedIn India, cities (Bangalore, Hyderabad, Mumbai, Chennai, Pune), Indian companies (TCS, Infosys, Wipro, Accenture, Flipkart, Zomato) where natural
-9. All year references must be 2026. Never write 2024 or 2025.
-10. Include 2 to 3 data points or statistics. Estimates are fine, phrase as 'industry estimates suggest' or 'studies indicate'
-11. Add exactly 1 callout box: <div class="callout"><p><strong>Pro tip:</strong> your tip here</p></div>
-12. Internal links: naturally link to at least 2 of these where relevant:
-    <a href="/blog/ats-resume-rejection.html">ATS resume rejection</a>
-    <a href="/blog/why-no-interview-calls.html">why you are not getting interview calls</a>
-    <a href="/blog/hidden-job-market-india.html">hidden job market in India</a>
-    <a href="/blog/resume-mistakes-freshers.html">resume mistakes freshers make</a>
-    <a href="/blog/get-job-without-referrals.html">how to get a job without referrals</a>
-13. Place a CTA paragraph before the FAQ pushing readers to book a free call with TalentBuddy at +91 99802 91663
-14. End with FAQ: exactly 3 questions using <details class="faq-item"><summary class="faq-q">Question here</summary><div class="faq-a"><p>Answer here</p></div></details>
-15. No keyword stuffing. Natural density only.
-
-OUTPUT RULES — HARD REQUIREMENTS:
-A. Return ONLY valid HTML. No plain text, no markdown, no asterisks, no ## headings.
-B. Every section heading must be a real <h2> or <h3> tag. Never use bold text as a heading.
-C. Keyword density: primary keyword appears maximum 8 times total. No stuffing.
-D. Vary sentence structure throughout. No two consecutive sentences with the same pattern.
-E. FAQ must use exactly this format: <details class="faq-item"><summary class="faq-q">Question</summary><div class="faq-a"><p>Full detailed answer here, minimum 2 sentences.</p></div></details>
-F. Callout must use exactly: <div class="callout"><p><strong>Pro tip:</strong> actionable tip here</p></div>
-G. Internal links must be real anchor tags: <a href="/blog/slug.html">anchor text</a>. Never just mention them.
-H. CTA phone must be: <a href="tel:+919980291663">+91 99802 91663</a>
-I. No vague stats. Never write 'a recent study found' or 'according to surveys'. Use specific source: 'Naukri's 2026 hiring report' or 'industry estimates suggest X%'.
-J. Every H2 section must give the reader one concrete, actionable takeaway. Not just what is happening, but what to DO.
-K. Minimum 1400 words. Count carefully. If short, expand each section.
-L. Short paragraphs only. Hard limit: 3 sentences per paragraph. Break longer thoughts into multiple paragraphs.
-M. Start article with a <p> intro paragraph. No H1 tag anywhere in the output.
-N. End with FAQ section (3 questions with full answers) followed by nothing else.`;
-
-  var data = await callNIM(prompt, 4000);
-  return data.choices[0].message.content.trim();
-}
-
-function extractMetaDesc(html, topic) {
-  // Extract first paragraph text for meta description
-  var match = html.match(/<p[^>]*>(.*?)<\/p>/);
-  if (match) {
-    var text = match[1].replace(/<[^>]+>/g, '').substring(0, 155);
-    return text + (text.length >= 155 ? '...' : '');
-  }
-  return 'Learn ' + topic.title.toLowerCase() + ' — expert advice from TalentBuddy, India\'s job placement services partner.';
-}
-
-function wrapInTemplate(bodyHTML, topic, metaDesc) {
-  var today = new Date().toISOString().split('T')[0];
-  var readTime = Math.ceil(currentArticle.words / 200) || 8;
-  var slug = topic.slug;
-  var baseUrl = cfg.baseUrl || 'https://talentbuddy.xyz';
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="${escAttr(metaDesc)}">
-  <meta name="robots" content="index, follow">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="${escAttr(topic.title)} | TalentBuddy">
-  <meta property="og:description" content="${escAttr(metaDesc)}">
-  <meta property="og:url" content="${baseUrl}/blog/${slug}.html">
-  <title>${escAttr(topic.title)} | TalentBuddy – Job Placement Services India</title>
-  <link rel="canonical" href="${baseUrl}/blog/${slug}.html">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "${escAttr(topic.title)}",
-    "description": "${escAttr(metaDesc)}",
-    "author": { "@type": "Organization", "name": "TalentBuddy" },
-    "publisher": { "@type": "Organization", "name": "TalentBuddy", "url": "${baseUrl}" },
-    "url": "${baseUrl}/blog/${slug}.html",
-    "datePublished": "${today}",
-    "dateModified": "${today}"
-  }
-  <\/script>
-  <style>
-    .blog-post-hero { background: var(--navy); padding: 64px 5% 72px; position: relative; overflow: hidden; }
-    .blog-post-hero .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(33,100,243,.18) 1px, transparent 1px); background-size: 36px 36px; }
-    .blog-post-hero .glow1 { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(124,58,237,.2) 0%, transparent 70%); top: -200px; right: -100px; pointer-events: none; }
-    .blog-post-hero-in { position: relative; z-index: 2; max-width: 760px; margin: 0 auto; }
-    .breadcrumb { font-size: .78rem; color: rgba(255,255,255,.44); margin-bottom: 1.2rem; }
-    .breadcrumb a { color: rgba(255,255,255,.55); text-decoration: none; }
-    .breadcrumb a:hover { color: white; }
-    .post-tag { display: inline-block; background: rgba(33,100,243,.25); color: #93C5FD; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 16px; }
-    .blog-post-hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; color: white; line-height: 1.18; margin-bottom: 1rem; }
-    .post-meta { color: rgba(255,255,255,.44); font-size: .8rem; }
-    .post-body { max-width: 760px; margin: 0 auto; padding: 56px 5% 40px; }
-    .post-body h2 { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 2.2rem 0 .9rem; }
-    .post-body h3 { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin: 1.6rem 0 .6rem; }
-    .post-body p { color: var(--muted); font-size: .94rem; line-height: 1.8; margin-bottom: 1.1rem; }
-    .post-body strong { color: var(--text); }
-    .post-body a { color: var(--blue); }
-    .post-body ul { margin: .5rem 0 1rem 1.4rem; }
-    .post-body li { color: var(--muted); font-size: .94rem; line-height: 1.75; margin-bottom: .3rem; }
-    .callout { background: var(--blue-l); border-left: 4px solid var(--blue); border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 1.8rem 0; }
-    .callout p { color: var(--text); margin: 0; font-size: .9rem; }
-    .callout strong { color: var(--blue); }
-    .post-cta { background: var(--navy); border-radius: 18px; padding: 36px; text-align: center; margin: 2.5rem 0; position: relative; overflow: hidden; }
-    .post-cta .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(33,100,243,.18) 1px, transparent 1px); background-size: 28px 28px; }
-    .post-cta-in { position: relative; z-index: 2; }
-    .post-cta h3 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; margin-bottom: .7rem; }
-    .post-cta p { color: rgba(255,255,255,.56); font-size: .86rem; margin-bottom: 1.4rem; }
-    .faq-list { margin-top: 44px; display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
-    .faq-item { background: white; border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s; }
-    .faq-item[open] { border-color: var(--blue); }
-    .faq-q { padding: 18px 22px; font-family: 'Sora', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .faq-q::-webkit-details-marker { display: none; }
-    .faq-q::after { content: '+'; font-size: 1.3rem; font-weight: 400; color: var(--blue); flex-shrink: 0; }
-    .faq-item[open] .faq-q::after { transform: rotate(45deg); }
-    .faq-item[open] .faq-q { color: var(--blue); }
-    .faq-a { padding: 0 22px 18px; }
-    .faq-a p { color: var(--muted); font-size: .86rem; line-height: 1.75; }
-    .post-nav { display: flex; justify-content: space-between; gap: 16px; margin: 2rem 0; flex-wrap: wrap; }
-    .post-nav a { color: var(--blue); font-size: .86rem; font-weight: 600; text-decoration: none; }
-  </style>
-</head>
-<script src="/assets/js/blog-lead-capture.js" defer><\/script>
-<body>
-<nav aria-label="Main navigation">
-  <a href="/" class="logo" aria-label="TalentBuddy – Home">
-    <img src="/assets/images/logo.png" alt="TalentBuddy Logo" class="logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <div class="logo-fallback">
-      <div class="logo-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <span class="logo-text"><span>Talent</span>Buddy</span>
-    </div>
-  </a>
-  <ul class="nav-links" role="list">
-    <li><a href="/#process">How It Works</a></li>
-    <li><a href="/#success">Success Stories</a></li>
-    <li><a href="/#promise">Our Promise</a></li>
-    <li><a href="/#testimonials">Reviews</a></li>
-  </ul>
-  <div class="nav-right">
-    <a href="/blog/" class="nav-blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Blog</a>
-    <a href="tel:+919980291663" class="nav-cta">📞 Book a Free Call</a>
-  </div>
-  <button class="hbg" onclick="toggleNav()" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-</nav>
-<div class="mnav" id="mnav">
-  <a href="/#process" onclick="closeNav()">How It Works</a>
-  <a href="/#success" onclick="closeNav()">Success Stories</a>
-  <a href="/blog/" onclick="closeNav()" class="mblog">📖 Blog</a>
-  <a href="tel:+919980291663" class="mcta" onclick="closeNav()">📞 Book Free Discovery Call</a>
-</div>
-
-<header class="blog-post-hero">
-  <div class="dots" aria-hidden="true"></div>
-  <div class="glow1" aria-hidden="true"></div>
-  <div class="blog-post-hero-in">
-    <nav aria-label="Breadcrumb" class="breadcrumb">
-      <a href="/">Home</a> &rsaquo; <a href="/blog/">Blog</a> &rsaquo; ${escHtml(topic.title).substring(0, 40)}…
-    </nav>
-    <span class="post-tag">${escHtml(topic.tag)}</span>
-    <h1>${escHtml(topic.title)}</h1>
-    <p class="post-meta">By TalentBuddy Team &nbsp;·&nbsp; Updated ${new Date().toLocaleDateString('en-IN', {month:'long', year:'numeric'})} &nbsp;·&nbsp; ${readTime} min read</p>
-  </div>
-</header>
-
-<main>
-  <article class="post-body">
-    ${bodyHTML}
-
-    <div class="post-cta">
-      <div class="dots" aria-hidden="true"></div>
-      <div class="post-cta-in">
-        <h3>Ready to Get Interview Calls?</h3>
-        <p>Book a free 30-minute discovery call with TalentBuddy. We'll audit your strategy and give you a clear action plan.</p>
-        <a href="tel:+919980291663" class="btn-blue">📞 Book My Free Call Now</a>
-      </div>
-    </div>
-
-    <div class="post-nav">
-      <a href="/blog/">← Back to All Articles</a>
-      <a href="/#contact">Book Free Discovery Call →</a>
-    </div>
-  </article>
-</main>
-
-<footer>
-  <div class="ft">
-    <div class="ft-top">
-      <div class="ft-brand">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
-          <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center"><svg style="width:18px;height:18px;fill:white" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-          <div class="ft-brand-name">TalentBuddy Job Placement</div>
-        </div>
-        <p class="ft-brand-desc">India's job placement services partner. Transparent. Ethical. Realtime tracking.</p>
-        <p style="margin-top:10px;font-size:.75rem;color:rgba(255,255,255,.48)">📞 <a href="tel:+919980291663" style="color:rgba(255,255,255,.6);text-decoration:none">+91 99802 91663</a></p>
-      </div>
-      <div class="ft-links">
-        <div class="fc"><h5>Company</h5><ul><li><a href="/">Homepage</a></li><li><a href="/#process">How It Works</a></li><li><a href="/#contact">Book Free Call</a></li></ul></div>
-        <div class="fc"><h5>More Articles</h5><ul>
-          <li><a href="/blog/">All Blog Articles</a></li>
-          <li><a href="/blog/why-no-interview-calls.html">Why No Interview Calls</a></li>
-          <li><a href="/blog/ats-resume-rejection.html">ATS Resume Rejection</a></li>
-          <li><a href="/blog/hidden-job-market-india.html">Hidden Job Market India</a></li>
-          <li><a href="/blog/resume-mistakes-freshers.html">Resume Mistakes Freshers</a></li>
-        </ul></div>
-      </div>
-    </div>
-    <div class="ft-bot"><span>© 2026 TalentBuddy Job Placement Services India. All rights reserved.</span><div style="display:flex;gap:18px"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div>
-  </div>
-</footer>
-
-<a href="https://wa.me/919980291663" class="waf" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg></a>
-<script src="/assets/js/main.js" defer><\/script>
-</body>
-</html>`;
-}
-
-/* ── SHOW PREVIEW ── */
-function showPreview() {
-  var topic = currentArticle.topic;
-  var slug = currentArticle.slug;
-  var baseUrl = cfg.baseUrl || 'https://talentbuddy.xyz';
-
-  document.getElementById('previewUrl').textContent = baseUrl + '/blog/' + slug + '.html';
-  document.getElementById('metaSlug').textContent = slug;
-  document.getElementById('metaKeyword').textContent = topic.keyword;
-  document.getElementById('metaWords').textContent = currentArticle.words.toLocaleString() + ' words';
-  document.getElementById('metaRead').textContent = Math.ceil(currentArticle.words / 200) + ' min read';
-  document.getElementById('metaDesc').textContent = currentArticle.metaDesc;
-  document.getElementById('metaFile').textContent = 'blog/' + slug + '.html';
-
-  // Count internal links
-  var linkMatches = (currentArticle.html.match(/href="\/blog\//g) || []).length;
-  document.getElementById('metaLinks').textContent = linkMatches + ' internal links';
-
-  // Render article body preview
-  var bodyOnly = currentArticle.html.match(/<article class="post-body">([\s\S]*?)<\/article>/);
-  if (bodyOnly) {
-    // Show just first part
-    var preview = bodyOnly[1].substring(0, 6000);
-    document.getElementById('articlePreview').innerHTML =
-      '<h1>' + escHtml(topic.title) + '</h1>' + preview;
-  }
-
-  document.getElementById('publishLog').style.display = 'none';
-  document.getElementById('publishBtn').disabled = false;
-  document.getElementById('publishBtn').innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Publish to GitHub';
-
-  showScreen('preview');
-}
-
-/* ── PUBLISH ── */
-async function publishArticle() {
-  var btn = document.getElementById('publishBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Publishing…';
-
-  var log = document.getElementById('publishLog');
-  log.style.display = 'block';
-  log.innerHTML = '';
-
-  function addLog(msg, type) {
-    log.innerHTML += '<div class="log-line '+(type||'')+'">[' + new Date().toLocaleTimeString() + '] ' + msg + '</div>';
-    log.scrollTop = log.scrollHeight;
-  }
-
-  try {
-    addLog('Connecting to GitHub API…', 'info');
-    var slug = currentArticle.slug;
-    var filePath = 'blog/' + slug + '.html';
-    var content = btoa(unescape(encodeURIComponent(currentArticle.html)));
-
-    // Check if file already exists
-    var existingSha = null;
-    try {
-      var checkRes = await ghFetch('GET', '/contents/' + filePath);
-      if (checkRes.sha) existingSha = checkRes.sha;
-    } catch(e) { /* new file */ }
-
-    addLog('Writing blog/' + slug + '.html…', 'info');
-    var commitBody = {
-      message: 'feat(blog): add SEO article — ' + currentArticle.title,
-      content: content,
-      branch: cfg.branch || 'main'
-    };
-    if (existingSha) commitBody.sha = existingSha;
-
-    await ghFetch('PUT', '/contents/' + filePath, commitBody);
-    addLog('✓ Article committed to repo', 'ok');
-
-    // Update sitemap
-    addLog('Fetching sitemap.xml…', 'info');
-    try {
-      var sitemapRes = await ghFetch('GET', '/contents/sitemap.xml');
-      var sitemapContent = decodeURIComponent(escape(atob(sitemapRes.content.replace(/\n/g,''))));
-      var today = new Date().toISOString().split('T')[0];
-      var baseUrl = cfg.baseUrl || 'https://talentbuddy.xyz';
-      var newUrl = '\n  <url>\n    <loc>' + baseUrl + '/blog/' + slug + '.html</loc>\n    <lastmod>' + today + '</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>';
-
-      if (!sitemapContent.includes(slug)) {
-        var updatedSitemap = sitemapContent.replace('</urlset>', newUrl + '\n\n</urlset>');
-        var sitemapEncoded = btoa(unescape(encodeURIComponent(updatedSitemap)));
-        await ghFetch('PUT', '/contents/sitemap.xml', {
-          message: 'chore(sitemap): add ' + slug,
-          content: sitemapEncoded,
-          sha: sitemapRes.sha,
-          branch: cfg.branch || 'main'
-        });
-        addLog('✓ sitemap.xml updated', 'ok');
-      } else {
-        addLog('sitemap.xml already has this URL — skipped', 'info');
-      }
-    } catch(e) {
-      addLog('sitemap.xml update skipped: ' + e.message, 'info');
-    }
-
-    // Update blog index (append new card)
-    addLog('Updating blog/index.html…', 'info');
-    try {
-      await updateBlogIndex(slug);
-      addLog('✓ blog/index.html updated', 'ok');
-    } catch(e) {
-      addLog('blog/index.html update skipped (manual update needed)', 'info');
-    }
-
-    // Save to local history
-    var post = {
-      title: currentArticle.title,
-      slug: slug,
-      url: (cfg.baseUrl || 'https://talentbuddy.xyz') + '/blog/' + slug + '.html',
-      date: new Date().toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}),
-      words: currentArticle.words
-    };
-    publishedPosts.unshift(post);
-    localStorage.setItem('tb_published', JSON.stringify(publishedPosts));
-
-    addLog('✓ All done! Vercel deploying in ~30 seconds.', 'ok');
-    await delay(800);
-
-    // Show success
-    document.getElementById('successMsg').textContent = '"' + currentArticle.title + '" has been committed to GitHub. Vercel will deploy it live in ~30 seconds.';
-    document.getElementById('liveLink').href = post.url;
-    showScreen('success');
-
-  } catch(e) {
-    addLog('ERROR: ' + e.message, 'err');
-    btn.disabled = false;
-    btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Retry Publish';
-    showToast('Publish failed: ' + e.message, 'err');
-  }
-}
-
-async function updateBlogIndex(slug) {
-  var indexRes = await ghFetch('GET', '/contents/blog/index.html');
-  var indexContent = decodeURIComponent(escape(atob(indexRes.content.replace(/\n/g,''))));
-  var topic = currentArticle.topic;
-  var today = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-
-  var newCard = `
-      <article class="blog-card fi" role="listitem">
-        <div class="blog-card-body">
-          <span class="blog-tag">${escHtml(topic.tag)}</span>
-          <h2>${escHtml(topic.title)}</h2>
-          <p>${escHtml(topic.reason || currentArticle.metaDesc)}</p>
-        </div>
-        <div class="blog-card-footer">
-          <a href="/blog/${slug}.html" class="blog-read-more">
-            Read Article
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          </a>
-        </div>
-      </article>`;
-
-  // Insert before closing </div> of blog-grid
-  var updated = indexContent.replace(/(<\/div>\s*<\/section>)/, newCard + '\n    </div>\n  </section>');
-  if (updated === indexContent) throw new Error('Could not locate insertion point in blog/index.html');
-
-  var encoded = btoa(unescape(encodeURIComponent(updated)));
-  await ghFetch('PUT', '/contents/blog/index.html', {
-    message: 'feat(blog): add card for ' + slug,
-    content: encoded,
-    sha: indexRes.sha,
-    branch: cfg.branch || 'main'
-  });
-}
-
-/* ── PUBLISHED LIST ── */
-function renderPublished() {
-  var el = document.getElementById('publishedList');
-  if (!el) return;
-  if (!publishedPosts.length) {
-    el.innerHTML = '<div class="empty-state">No posts published yet. Go to Topic Discovery to write your first article.</div>';
-    return;
-  }
-  el.innerHTML = publishedPosts.map(function(p) {
-    return '<div class="pub-item">' +
-      '<div class="pub-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>' +
-      '<div style="flex:1;min-width:0"><div class="pub-title">'+escHtml(p.title)+'</div><div class="pub-url">'+escHtml(p.url)+'</div></div>' +
-      '<div class="pub-date">'+escHtml(p.date)+'</div>' +
+  var el = document.getElementById('topics-list');
+  document.getElementById('tc').textContent = topics.length + ' topics';
+  if (!topics.length) { el.innerHTML = '<div class="empty"><div class="e-ico">📋</div>No topics in this bucket</div>'; return; }
+  topics = topics.slice().sort(function(a,b){return score(b)-score(a)});
+  el.innerHTML = topics.map(function(t) {
+    var s = score(t), sc = s>=75?'s-hi':s>=55?'s-md':'s-lo';
+    var active = S.activeTopic && S.activeTopic.id===t.id ? 'active' : '';
+    return '<div class="topic-item '+active+'" id="ti-'+t.id+'" onclick="selectTopic('+t.id+')">' +
+      '<div class="t-title">'+esc(t.title)+'</div>' +
+      '<div class="t-meta"><span class="score-pill '+sc+'">'+s+'</span><span class="t-bkt">'+esc(BUCKETS[t.bucket]||t.bucket)+'</span></div>' +
+      '<button class="write-btn2" onclick="event.stopPropagation();selectAndGen('+t.id+')">Write →</button>' +
     '</div>';
   }).join('');
 }
 
-/* ── GITHUB API ── */
-async function ghFetch(method, path, body) {
-  var owner = cfg.owner || 'vaswinraaju-png';
-  var repo  = cfg.repo  || 'talent_buddy';
-  var url = 'https://api.github.com/repos/' + owner + '/' + repo + path;
-  var opts = {
-    method: method,
-    headers: {
-      'Authorization': 'Bearer ' + cfg.ghPat,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'Content-Type': 'application/json'
-    }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  var res = await fetch(url, opts);
-  if (!res.ok) {
-    var err = await res.json().catch(function(){return{}});
-    throw new Error('GitHub ' + res.status + ': ' + (err.message || res.statusText));
-  }
-  return method === 'DELETE' ? {} : res.json();
+function selectTopic(id) {
+  S.activeTopic = S.topics.find(function(t){return t.id===id});
+  filterTopics();
+  document.getElementById('btn-gen').disabled = false;
+  setStatus('Ready: "'+S.activeTopic.title.substring(0,45)+'..."', false);
+  var slug = slugify(S.activeTopic.title);
+  document.getElementById('pub-slug').value = slug;
+  updatePubPreview();
 }
 
-/* ── GROQ API ── */
-async function callNIM(prompt, maxTokens) {
-  var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + (cfg.anthropicKey || '')
-    },
-    body: JSON.stringify({
-      model: cfg.model || 'llama-3.3-70b-versatile',
-      messages: [{role:'user', content: prompt}],
-      max_tokens: maxTokens || 1500,
-      temperature: 0.7
-    })
-  });
-  if (!res.ok) {
-    var err = await res.json().catch(function(){return{}});
-    throw new Error('Groq API ' + res.status + ': ' + (err.error && err.error.message ? err.error.message : res.statusText));
+function selectAndGen(id) { selectTopic(id); generateArticle(); }
+
+async function fetchTopics() {
+  if (!S.settings.openai) { toast('Add OpenAI key in Settings', 'terr'); showPanel('settings'); return; }
+  var b = document.getElementById('bucket-filter').value;
+  var bLabel = b==='all' ? 'all content buckets' : BUCKETS[b];
+  setStatus('Discovering topics via AI...', true);
+  try {
+    var res = await callOpenAI([{role:'user',content:
+      'Generate 10 SEO topic ideas for TalentBuddy (Indian job placement service) targeting '+bLabel+'.\n' +
+      'TalentBuddy helps Indian job seekers get interview calls via ATS CVs, recruiter outreach, live tracking.\n' +
+      'Return ONLY valid JSON array, no markdown:\n' +
+      '[{"title":"...","bucket":"'+(b==='all'?'core':b)+'","intent":85,"competition":40,"relevance":90}]\n' +
+      'Rules: titles must include a specific number/stat, reference 2026, be 8-12 words, no em dashes. Scores 0-100.'
+    }], 'gpt-4o', 1200);
+    var text = res.choices[0].message.content.trim().replace(/```json|```/g,'');
+    var newTopics = JSON.parse(text);
+    var maxId = S.topics.reduce(function(m,t){return Math.max(m,t.id)},0);
+    newTopics.forEach(function(t,i){t.id=maxId+i+1});
+    S.topics = S.topics.concat(newTopics);
+    filterTopics();
+    toast('Added '+newTopics.length+' new topics', 'tok');
+  } catch(e) { toast('Topic discovery failed: '+e.message, 'terr'); }
+  setStatus('Select a topic to generate', false);
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────
+async function generateArticle() {
+  if (!S.activeTopic) { toast('Select a topic first', 'terr'); return; }
+  if (!S.settings.openai) { toast('Add OpenAI key in Settings', 'terr'); showPanel('settings'); return; }
+
+  showTab('write');
+  document.getElementById('btn-gen').disabled = true;
+  document.getElementById('write-placeholder').style.display = 'none';
+  document.getElementById('article-output').style.display = 'block';
+  document.getElementById('article-output').innerHTML =
+    '<div style="padding:40px;text-align:center;color:var(--muted2)">' +
+    '<div class="spinner on" style="display:inline-block;width:22px;height:22px;margin-bottom:14px"></div>' +
+    '<p>Writing with GPT-4o...</p></div>';
+  setStatus('Generating article...', true);
+
+  var phone = S.settings.phone || '+91 99802 91663';
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var custom = S.settings.sysprompt || '';
+
+  // System prompt matching TalentBuddy's exact blog style
+  var sys = 'You are a senior SEO content writer for TalentBuddy (talentbuddy.xyz), India\'s job placement service.\n\n' +
+    'AUDIENCE: Indian job seekers, age 22-35, frustrated with zero callback rates.\n' +
+    'PRIMARY CTA: Book a free 30-min discovery call at '+phone+'\n\n' +
+    'STRICT OUTPUT RULES — every violation drops article quality:\n' +
+    '1. Output ONLY valid HTML fragments. Zero markdown. Zero plain-text headings.\n' +
+    '2. All headings: <h2> and <h3> tags only. Never bold text as heading.\n' +
+    '3. NEVER use em dashes (—). Use commas or colons instead. Hard rule.\n' +
+    '4. Never use "In today\'s competitive" or "Are you struggling" openers.\n' +
+    '5. Short paragraphs: maximum 3 sentences per <p>. Break long thoughts.\n' +
+    '6. 2026 dates only. Never 2024 or 2025.\n' +
+    '7. Keyword density: 5-8 occurrences max. No stuffing.\n' +
+    '8. Every <h2> must state one actionable takeaway in the heading itself.\n' +
+    '9. Include at least 1 HTML table: <table><tr><th><td> tags with real data.\n' +
+    '10. Include at least 3 <details><summary class="faq-q">Question</summary><div class="faq-a"><p>Answer with 2+ sentences of specific info, not "it depends".</p></div></details> FAQ blocks.\n' +
+    '11. Use <div class="callout"><p><strong>Pro tip:</strong> tip here.</p></div> for at least 1 callout.\n' +
+    '12. After the 3rd <h2>, inject exactly:\n<div class="mid-cta-preview"><div class="mid-cta-prev-text"><h4>Struggling to get interview calls?</h4><p>TalentBuddy has helped 2,400+ Indian job seekers land interviews in under 45 days.</p></div><a href="tel:'+phone+'" class="mid-cta-btn-prev">Book Free Call →</a></div>\n' +
+    '13. Use real statistics: "Naukri\'s 2026 hiring report suggests..." not vague claims.\n' +
+    '14. India-specific throughout: Bangalore, Hyderabad, Mumbai, Chennai, Pune, Naukri, LinkedIn India, TCS, Infosys, Wipro.\n' +
+    '15. Target 1,400-1,800 words.\n' +
+    '16. Internally link at least 2 of these where natural:\n' +
+    '    <a href="/blog/ats-resume-rejection.html">ATS resume rejection</a>\n' +
+    '    <a href="/blog/why-no-interview-calls.html">why you are not getting interview calls</a>\n' +
+    '    <a href="/blog/hidden-job-market-india.html">hidden job market in India</a>\n' +
+    '    <a href="/blog/resume-mistakes-freshers.html">resume mistakes freshers make</a>\n' +
+    '    <a href="/blog/get-job-without-referrals.html">how to get a job without referrals</a>\n' +
+    '17. Link to <a href="/tools/calculator.html">free interview chances calculator</a> at least once.\n' +
+    '18. End with <h2>Frequently Asked Questions</h2> and at least 3 <details> blocks.\n' +
+    '19. NO H1 tag anywhere in the output. Start with a <p> intro.\n' +
+    (custom ? '\nADDITIONAL INSTRUCTIONS:\n'+custom : '');
+
+  var user = 'Write a complete SEO blog article for TalentBuddy on:\n"'+S.activeTopic.title+'"\n\n' +
+    'Bucket: '+BUCKETS[S.activeTopic.bucket]+'\n' +
+    'Derive the best 3-4 word focus keyword from the title.\n' +
+    'Domain: '+domain;
+
+  try {
+    var res = await callOpenAI([{role:'system',content:sys},{role:'user',content:user}], 'gpt-4o', 3500);
+    var html = res.choices[0].message.content.trim();
+    var wc = html.replace(/<[^>]+>/g,'').split(/\s+/).filter(Boolean).length;
+    S.article = {
+      title: S.activeTopic.title,
+      slug: document.getElementById('pub-slug').value || slugify(S.activeTopic.title),
+      html: html,
+      wordCount: wc,
+      topic: S.activeTopic,
+      generatedAt: new Date().toISOString()
+    };
+    renderArticle();
+    runAudit();
+    addHistory(S.article);
+    toast('Article generated: '+wc+' words ✓', 'tok');
+    setStatus('Generated: '+wc+' words', false);
+  } catch(e) {
+    document.getElementById('article-output').innerHTML =
+      '<div style="padding:40px;text-align:center;color:var(--red)">Generation failed: '+esc(e.message)+'</div>';
+    toast('Generation failed: '+e.message, 'terr');
+    setStatus('Generation failed', false);
   }
+  document.getElementById('btn-gen').disabled = false;
+}
+
+function renderArticle() {
+  if (!S.article) return;
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var bp = S.settings.blogpath || 'blog';
+  document.getElementById('article-output').innerHTML =
+    '<div class="article-meta">' +
+      '<h1>'+esc(S.article.title)+'</h1>' +
+      '<div class="meta-chips">' +
+        '<span class="chip">📝 '+S.article.wordCount+' words</span>' +
+        '<span class="chip">🗂 '+esc(BUCKETS[S.article.topic.bucket])+'</span>' +
+        '<span class="chip">🔗 '+domain+'/'+bp+'/'+S.article.slug+'</span>' +
+        '<span class="chip">📅 '+new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+'</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="article-body">'+S.article.html+'</div>';
+  document.getElementById('write-placeholder').style.display = 'none';
+  document.getElementById('article-output').style.display = 'block';
+  if (!document.getElementById('pub-slug').value) document.getElementById('pub-slug').value = S.article.slug;
+  updatePubPreview();
+}
+
+// ── SEO AUDIT ─────────────────────────────────────────────────────
+function runAudit() {
+  if (!S.article) return;
+  var html = S.article.html;
+  var text = html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  var words = text.split(/\s+/).filter(Boolean);
+
+  var h2Count = (html.match(/<h2/gi)||[]).length;
+  var h3Count = (html.match(/<h3/gi)||[]).length;
+  var tableCount = (html.match(/<table/gi)||[]).length;
+  var faqCount = (html.match(/<details/gi)||[]).length;
+  var calloutCount = (html.match(/class="callout"/gi)||[]).length;
+  var midCta = html.includes('mid-cta');
+  var hasEmDash = html.includes('—');
+  var has2026 = html.includes('2026');
+  var has2025 = html.includes('2025');
+  var hasMarkdown = /^#{1,3}\s|^\*\*|\*\*$|^-\s/m.test(html);
+  var wc = words.length;
+  var focusKw = S.article.title.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).slice(0,3).join(' ');
+  var kwCount = (text.toLowerCase().split(focusKw).length-1);
+  var kwDensity = ((kwCount/words.length)*100).toFixed(1);
+  var hasInternal = (html.match(/href="\/blog\//g)||[]).length >= 2;
+  var hasCalculator = html.includes('calculator.html');
+
+  var checks = [
+    {id:'wc',label:'Word Count',detail:wc+' words (target 1,400-1,800)',pass:wc>=1400&&wc<=1900},
+    {id:'h2',label:'H2 Structure',detail:h2Count+' H2s (need 4+)',pass:h2Count>=4},
+    {id:'h3',label:'H3 Subheadings',detail:h3Count+' H3s (need 2+)',pass:h3Count>=2},
+    {id:'table',label:'HTML Table',detail:tableCount+' table(s)',pass:tableCount>=1},
+    {id:'faq',label:'FAQ <details> Blocks',detail:faqCount+' blocks (need 3+)',pass:faqCount>=3},
+    {id:'callout',label:'Callout Boxes',detail:calloutCount+' callout(s)',pass:calloutCount>=1},
+    {id:'midcta',label:'Mid-Article CTA',detail:midCta?'Injected after 3rd H2':'Missing',pass:midCta},
+    {id:'emdash',label:'No Em Dashes',detail:hasEmDash?'Em dashes found — remove':'Clean: no em dashes',pass:!hasEmDash},
+    {id:'y2026',label:'2026 Date References',detail:has2026?'2026 present':'No 2026 reference',pass:has2026},
+    {id:'y2025',label:'No Stale 2025 Dates',detail:has2025?'2025 found — replace with 2026':'No stale dates',pass:!has2025},
+    {id:'kw',label:'Keyword Density',detail:'"'+focusKw+'" x'+kwCount+' ('+kwDensity+'%, target 0.5-2%)',pass:kwCount>=4&&parseFloat(kwDensity)<=2.5},
+    {id:'md',label:'No Markdown Leaks',detail:hasMarkdown?'Markdown syntax in HTML':'Pure HTML',pass:!hasMarkdown},
+    {id:'internal',label:'Internal Links (2+)',detail:(html.match(/href="\/blog\//g)||[]).length+' internal links',pass:hasInternal},
+    {id:'calc',label:'Calculator Link',detail:hasCalculator?'Calculator linked':'Calculator link missing',pass:hasCalculator}
+  ];
+
+  var passed = checks.filter(function(c){return c.pass}).length;
+  var s = Math.round((passed/checks.length)*100);
+  S.audit = {checks:checks, score:s, passed:passed};
+
+  document.getElementById('audit-empty').style.display = 'none';
+  document.getElementById('audit-content').style.display = 'block';
+
+  var circ = 182;
+  var offset = circ - (s/100)*circ;
+  document.getElementById('score-arc').setAttribute('stroke-dashoffset', offset);
+  document.getElementById('score-arc').setAttribute('stroke', s>=75?'var(--green)':s>=50?'var(--yellow)':'var(--red)');
+  document.getElementById('score-num').textContent = s;
+  document.getElementById('score-num').style.color = s>=75?'var(--green)':s>=50?'var(--yellow)':'var(--red)';
+  document.getElementById('score-label').textContent = s>=75?'Good Score':s>=50?'Needs Work':'Poor Score';
+  document.getElementById('score-desc').textContent = passed+'/'+checks.length+' checks passing';
+
+  document.getElementById('audit-checks').innerHTML = checks.map(function(c){
+    return '<div class="check-item"><span class="chk-ico">'+(c.pass?'✅':'❌')+'</span>' +
+      '<div class="chk-lbl"><strong>'+esc(c.label)+'</strong><span>'+esc(c.detail)+'</span></div>' +
+      (!c.pass?'<button class="fix-btn2" onclick="fixIssue(\''+c.id+'\')">Fix</button>':'')+
+    '</div>';
+  }).join('');
+}
+
+async function fixIssue(id) {
+  if (!S.article || !S.settings.openai) { toast('Need article + OpenAI key', 'terr'); return; }
+  var fixes = {
+    wc:'Expand to 1,500+ words by adding more detail, examples, and actionable steps. Keep all existing content.',
+    h2:'Add more H2 sections (target 5+). Each H2 must be an actionable takeaway as a heading.',
+    h3:'Add H3 subheadings under existing H2 sections.',
+    table:'Add at least one HTML comparison table using <table><tr><th><td> with real Indian salary/stats data.',
+    faq:'Add at least 3 more <details><summary class="faq-q">Question</summary><div class="faq-a"><p>Specific 2-sentence answer.</p></div></details> FAQ blocks.',
+    callout:'Add 2 <div class="callout"><p><strong>Pro tip:</strong> actionable tip.</p></div> boxes.',
+    midcta:'After the 3rd <h2>, insert: <div class="mid-cta-preview"><div class="mid-cta-prev-text"><h4>Struggling to get interview calls?</h4><p>TalentBuddy has helped 2,400+ Indian job seekers land interviews in under 45 days.</p></div><a href="tel:'+(S.settings.phone||'+91 99802 91663')+'" class="mid-cta-btn-prev">Book Free Call \u2192</a></div>',
+    emdash:'Remove ALL em dashes (—). Replace with commas or colons. Check every sentence.',
+    y2026:'Add multiple natural references to 2026 throughout the article.',
+    y2025:'Replace every "2025" with "2026" throughout.',
+    kw:'Ensure focus keyword appears 5-7 times naturally throughout the article.',
+    md:'Convert all markdown to HTML: ## → <h2>, ** → <strong>, - bullets → <ul><li>.',
+    internal:'Add natural internal links to at least 2 of: /blog/ats-resume-rejection.html, /blog/why-no-interview-calls.html, /blog/hidden-job-market-india.html.',
+    calc:'Add a natural link to <a href="/tools/calculator.html">free interview chances calculator</a>.'
+  };
+  toast('Fixing: '+id+'...', null);
+  setStatus('Fixing issue...', true);
+  try {
+    var res = await callOpenAI([{role:'user',content:
+      'Fix this specific issue in the HTML article below.\nINSTRUCTION: '+fixes[id]+
+      '\nReturn ONLY the corrected full HTML article. No markdown. No preamble. Start with HTML.\nARTICLE:\n'+S.article.html
+    }], 'gpt-4o', 3500);
+    S.article.html = res.choices[0].message.content.trim();
+    S.article.wordCount = S.article.html.replace(/<[^>]+>/g,'').split(/\s+/).filter(Boolean).length;
+    renderArticle();
+    runAudit();
+    toast('Fixed ✓', 'tok');
+  } catch(e) { toast('Fix failed: '+e.message, 'terr'); }
+  setStatus(S.article.wordCount+' words', false);
+}
+
+async function autoOptimise() {
+  if (!S.article || !S.settings.openai) { toast('Need article + OpenAI key', 'terr'); return; }
+  var failed = (S.audit&&S.audit.checks||[]).filter(function(c){return !c.pass});
+  if (!failed.length) { toast('All checks passing!', 'tok'); return; }
+  document.getElementById('btn-auto').disabled = true;
+  setStatus('Auto-optimising...', true);
+  var phone = S.settings.phone || '+91 99802 91663';
+  var instructions = failed.map(function(c,i){return (i+1)+'. FIX "'+c.label+'": '+c.detail}).join('\n');
+  try {
+    var res = await callOpenAI([{role:'user',content:
+      'Fix ALL these issues in the HTML article. Do not miss any.\n\nISSUES:\n'+instructions+
+      '\n\nRULES:\n- Output ONLY corrected HTML. No markdown. No preamble.\n' +
+      '- Keep all content, only fix listed issues.\n' +
+      '- Mid-CTA after 3rd H2: <div class="mid-cta-preview"><div class="mid-cta-prev-text"><h4>Struggling to get interview calls?</h4><p>TalentBuddy has helped 2,400+ Indian job seekers land interviews in under 45 days.</p></div><a href="tel:'+phone+'" class="mid-cta-btn-prev">Book Free Call \u2192</a></div>\n\nARTICLE:\n'+S.article.html
+    }], 'gpt-4o', 4000);
+    S.article.html = res.choices[0].message.content.trim();
+    S.article.wordCount = S.article.html.replace(/<[^>]+>/g,'').split(/\s+/).filter(Boolean).length;
+    renderArticle();
+    runAudit();
+    toast('Auto-optimise complete ✓', 'tok');
+  } catch(e) { toast('Auto-optimise failed: '+e.message, 'terr'); }
+  document.getElementById('btn-auto').disabled = false;
+  setStatus(S.article.wordCount+' words', false);
+}
+
+// ── BUILD FULL HTML (TalentBuddy exact template) ─────────────────
+function buildFullHtml(article) {
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var bp = S.settings.blogpath || 'blog';
+  var slug = document.getElementById('pub-slug').value || article.slug;
+  var metaDesc = document.getElementById('pub-meta').value || article.title;
+  var phone = S.settings.phone || '+91 99802 91663';
+  var date = new Date().toISOString().split('T')[0];
+  var dateStr = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  var monthYear = new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  var readTime = Math.ceil(article.wordCount/220);
+  var tag = BUCKETS[article.topic.bucket] || article.topic.bucket;
+
+  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n' +
+  '  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+  '  <meta name="description" content="'+escAttr(metaDesc)+'">\n' +
+  '  <meta name="robots" content="index, follow">\n' +
+  '  <meta property="og:type" content="article">\n' +
+  '  <meta property="og:title" content="'+escAttr(article.title)+' | TalentBuddy">\n' +
+  '  <meta property="og:description" content="'+escAttr(metaDesc)+'">\n' +
+  '  <meta property="og:url" content="https://'+domain+'/'+bp+'/'+slug+'">\n' +
+  '  <title>'+escAttr(article.title)+' | TalentBuddy \u2013 Job Placement Services India</title>\n' +
+  '  <link rel="canonical" href="https://'+domain+'/'+bp+'/'+slug+'">\n' +
+  '  <script type="application/ld+json">\n  {\n    "@context":"https://schema.org",\n    "@type":"Article",\n    "headline":"'+escAttr(article.title)+'",\n    "description":"'+escAttr(metaDesc)+'",\n    "author":{"@type":"Organization","name":"TalentBuddy"},\n    "publisher":{"@type":"Organization","name":"TalentBuddy","url":"https://'+domain+'"},\n    "url":"https://'+domain+'/'+bp+'/'+slug+'",\n    "datePublished":"'+date+'",\n    "dateModified":"'+date+'"\n  }\n  <\/script>\n' +
+  '  <link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+  '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+  '  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">\n' +
+  '  <link rel="stylesheet" href="/assets/css/style.css">\n' +
+  '  <style>\n' +
+  '    .blog-post-hero{background:var(--navy);padding:64px 5% 72px;position:relative;overflow:hidden}\n' +
+  '    .blog-post-hero .dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(33,100,243,.18) 1px,transparent 1px);background-size:36px 36px}\n' +
+  '    .blog-post-hero .glow1{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}\n' +
+  '    .blog-post-hero-in{position:relative;z-index:2;max-width:760px;margin:0 auto}\n' +
+  '    .breadcrumb{font-size:.78rem;color:rgba(255,255,255,.44);margin-bottom:1.2rem}\n' +
+  '    .breadcrumb a{color:rgba(255,255,255,.55);text-decoration:none}\n' +
+  '    .breadcrumb a:hover{color:white}\n' +
+  '    .post-tag{display:inline-block;background:rgba(33,100,243,.25);color:#93C5FD;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:6px;margin-bottom:16px}\n' +
+  '    .blog-post-hero h1{font-family:\'Sora\',sans-serif;font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;color:white;line-height:1.18;margin-bottom:1rem}\n' +
+  '    .post-meta{color:rgba(255,255,255,.44);font-size:.8rem}\n' +
+  '    .post-body{max-width:760px;margin:0 auto;padding:56px 5% 40px}\n' +
+  '    .post-body h2{font-family:\'Sora\',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text);margin:2.2rem 0 .9rem}\n' +
+  '    .post-body h3{font-family:\'Sora\',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin:1.6rem 0 .6rem}\n' +
+  '    .post-body p{color:var(--muted);font-size:.94rem;line-height:1.8;margin-bottom:1.1rem}\n' +
+  '    .post-body strong{color:var(--text)}\n' +
+  '    .post-body a{color:var(--blue)}\n' +
+  '    .post-body ul,.post-body ol{margin:.5rem 0 1rem 1.4rem}\n' +
+  '    .post-body li{color:var(--muted);font-size:.94rem;line-height:1.75;margin-bottom:.3rem}\n' +
+  '    .callout{background:var(--blue-l);border-left:4px solid var(--blue);border-radius:0 12px 12px 0;padding:18px 22px;margin:1.8rem 0}\n' +
+  '    .callout p{color:var(--text);margin:0;font-size:.9rem}\n' +
+  '    .callout strong{color:var(--blue)}\n' +
+  '    .mid-cta-preview{background:var(--blue-l);border:2px solid rgba(33,100,243,.25);border-radius:14px;padding:20px 24px;margin:2rem 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}\n' +
+  '    .mid-cta-prev-text h4{font-family:\'Sora\',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin:0 0 4px}\n' +
+  '    .mid-cta-prev-text p{font-size:.82rem;color:var(--muted);margin:0}\n' +
+  '    .mid-cta-btn-prev{background:var(--blue);color:#fff;text-decoration:none;border-radius:8px;padding:10px 20px;font-size:.82rem;font-weight:600;white-space:nowrap;display:inline-block}\n' +
+  '    .post-cta{background:var(--navy);border-radius:18px;padding:36px;text-align:center;margin:2.5rem 0;position:relative;overflow:hidden}\n' +
+  '    .post-cta .dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(33,100,243,.18) 1px,transparent 1px);background-size:28px 28px}\n' +
+  '    .post-cta-in{position:relative;z-index:2}\n' +
+  '    .post-cta h3{font-family:\'Sora\',sans-serif;font-size:1.2rem;font-weight:800;color:white;margin-bottom:.7rem}\n' +
+  '    .post-cta p{color:rgba(255,255,255,.56);font-size:.86rem;margin-bottom:1.4rem}\n' +
+  '    .faq-item{background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;transition:border-color .2s}\n' +
+  '    .faq-item[open]{border-color:var(--blue)}\n' +
+  '    .faq-q{padding:18px 22px;font-family:\'Sora\',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}\n' +
+  '    .faq-q::-webkit-details-marker{display:none}\n' +
+  '    .faq-q::after{content:\'+\';font-size:1.3rem;font-weight:400;color:var(--blue);flex-shrink:0}\n' +
+  '    .faq-item[open] .faq-q::after{transform:rotate(45deg)}\n' +
+  '    .faq-item[open] .faq-q{color:var(--blue)}\n' +
+  '    .faq-a{padding:0 22px 18px}\n' +
+  '    .faq-a p{color:var(--muted);font-size:.86rem;line-height:1.75}\n' +
+  '    .post-nav{display:flex;justify-content:space-between;gap:16px;margin:2rem 0;flex-wrap:wrap}\n' +
+  '    .post-nav a{color:var(--blue);font-size:.86rem;font-weight:600;text-decoration:none}\n' +
+  '  </style>\n</head>\n' +
+  '<script src="/assets/js/blog-lead-capture.js" defer><\/script>\n<body>\n\n' +
+  '<nav aria-label="Main navigation">\n' +
+  '  <a href="/" class="logo" aria-label="TalentBuddy \u2013 Home">\n' +
+  '    <img src="/assets/images/logo.png" alt="TalentBuddy Logo" class="logo-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">\n' +
+  '    <div class="logo-fallback"><div class="logo-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><span class="logo-text"><span>Talent</span>Buddy</span></div>\n  </a>\n' +
+  '  <ul class="nav-links" role="list"><li><a href="/#process">How It Works</a></li><li><a href="/#success">Success Stories</a></li><li><a href="/#promise">Our Promise</a></li><li><a href="/#testimonials">Reviews</a></li></ul>\n' +
+  '  <div class="nav-right"><a href="/blog/" class="nav-blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Blog</a><a href="tel:'+phone+'" class="nav-cta">\uD83D\uDCDE Book a Free Call</a></div>\n' +
+  '  <button class="hbg" onclick="toggleNav()" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>\n</nav>\n' +
+  '<div class="mnav" id="mnav"><a href="/#process" onclick="closeNav()">How It Works</a><a href="/#success" onclick="closeNav()">Success Stories</a><a href="/blog/" onclick="closeNav()" class="mblog">\uD83D\uDCD6 Blog</a><a href="tel:'+phone+'" class="mcta" onclick="closeNav()">\uD83D\uDCDE Book Free Discovery Call</a></div>\n\n' +
+  '<header class="blog-post-hero">\n  <div class="dots" aria-hidden="true"></div>\n  <div class="glow1" aria-hidden="true"></div>\n' +
+  '  <div class="blog-post-hero-in">\n' +
+  '    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/'+bp+'/">Blog</a> &rsaquo; '+esc(article.title).substring(0,35)+'&hellip;</nav>\n' +
+  '    <span class="post-tag">'+esc(tag)+'</span>\n' +
+  '    <h1>'+esc(article.title)+'</h1>\n' +
+  '    <p class="post-meta">By TalentBuddy Team &nbsp;&middot;&nbsp; Updated '+monthYear+' &nbsp;&middot;&nbsp; '+readTime+' min read</p>\n' +
+  '  </div>\n</header>\n\n<main>\n  <article class="post-body">\n    ' +
+  article.html +
+  '\n\n    <div class="post-cta">\n      <div class="dots" aria-hidden="true"></div>\n      <div class="post-cta-in">\n        <h3>Ready to Get Interview Calls?</h3>\n        <p>Book a free 30-minute discovery call with TalentBuddy. We\'ll audit your strategy and give you a clear action plan.</p>\n        <a href="tel:'+phone+'" class="btn-blue">\uD83D\uDCDE Book My Free Call Now</a>\n      </div>\n    </div>\n\n    <div class="post-nav">\n      <a href="/'+bp+'/">\u2190 Back to All Articles</a>\n      <a href="/#contact">Book Free Discovery Call \u2192</a>\n    </div>\n  </article>\n</main>\n\n' +
+  '<footer>\n  <div class="ft"><div class="ft-top"><div class="ft-brand"><div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><div style="width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center"><svg style="width:18px;height:18px;fill:white" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="ft-brand-name">TalentBuddy Job Placement</div></div><p class="ft-brand-desc">India\'s job placement services partner. Transparent. Ethical. Realtime tracking.</p><p style="margin-top:10px;font-size:.75rem;color:rgba(255,255,255,.48)">\uD83D\uDCDE <a href="tel:'+phone+'" style="color:rgba(255,255,255,.6);text-decoration:none">'+phone+'</a></p></div><div class="ft-links"><div class="fc"><h5>Company</h5><ul><li><a href="/">Homepage</a></li><li><a href="/#process">How It Works</a></li><li><a href="/#contact">Book Free Call</a></li></ul></div><div class="fc"><h5>More Articles</h5><ul><li><a href="/'+bp+'/">All Articles</a></li><li><a href="/'+bp+'/why-no-interview-calls.html">Why No Interview Calls</a></li><li><a href="/'+bp+'/ats-resume-rejection.html">ATS Resume Rejection</a></li><li><a href="/'+bp+'/hidden-job-market-india.html">Hidden Job Market India</a></li><li><a href="/'+bp+'/resume-mistakes-freshers.html">Resume Mistakes Freshers</a></li></ul></div></div></div><div class="ft-bot"><span>&copy; 2026 TalentBuddy Job Placement Services India. All rights reserved.</span><div style="display:flex;gap:18px"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div></div></div>\n</footer>\n\n' +
+  '<a href="https://wa.me/919980291663" class="waf" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg></a>\n<script src="/assets/js/main.js" defer><\/script>\n</body>\n</html>';
+}
+
+// ── PUBLISH ────────────────────────────────────────────────────────
+function updatePubPreview() {
+  var slug = document.getElementById('pub-slug').value || 'your-slug';
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var bp = S.settings.blogpath || 'blog';
+  var repo = S.settings.repo || 'vaswinraaju-png/talent_buddy';
+  document.getElementById('pv-url').textContent = domain+'/'+bp+'/'+slug;
+  document.getElementById('pv-repo').textContent = repo+'/'+bp+'/'+slug+'.html';
+}
+
+async function publishNow() {
+  if (!S.article) { toast('No article to publish', 'terr'); return; }
+  if (!S.settings.github) { toast('Add GitHub PAT in Settings', 'terr'); showPanel('settings'); return; }
+  var slug = document.getElementById('pub-slug').value.trim();
+  if (!slug) { toast('Set slug before publishing', 'terr'); return; }
+
+  document.getElementById('btn-pub').disabled = true;
+  var log = document.getElementById('pub-log');
+  var addLog = function(msg, cls) {
+    log.innerHTML += '<span class="'+(cls||'')+'">['+(new Date().toLocaleTimeString())+'] '+esc(msg)+'\n</span>';
+    log.scrollTop = log.scrollHeight;
+  };
+  log.innerHTML = '';
+
+  var repo = S.settings.repo || 'vaswinraaju-png/talent_buddy';
+  var branch = S.settings.branch || 'main';
+  var bp = S.settings.blogpath || 'blog';
+  var filePath = bp+'/'+slug+'.html';
+  var fullHtml = buildFullHtml(S.article);
+  var encoded = btoa(unescape(encodeURIComponent(fullHtml)));
+
+  addLog('Publishing to '+repo+'/'+filePath+'...', 'log-info');
+  try {
+    var sha = null;
+    try {
+      var chk = await ghFetch('GET','/contents/'+filePath,repo,branch,S.settings.github);
+      if (chk.sha) { sha = chk.sha; addLog('Existing file found, updating...', 'log-info'); }
+    } catch(_) {}
+
+    var body = {message:'SEO: Add '+slug,content:encoded,branch:branch};
+    if (sha) body.sha = sha;
+    var res = await ghFetch('PUT','/contents/'+filePath,repo,branch,S.settings.github,body);
+    if (!res.ok) { var err = await res.json(); throw new Error(err.message||'HTTP '+res.status); }
+    addLog('Article published ✓', 'log-ok');
+
+    await updateSitemap(repo,branch,bp,slug,addLog);
+    await updateBlogIndex(repo,branch,bp,slug,addLog);
+    await pingGoogle(slug,addLog);
+
+    document.getElementById('pv-status').textContent = 'Published ✓ '+new Date().toLocaleTimeString();
+    document.getElementById('pv-status').style.color = 'var(--green)';
+    toast('Published successfully ✓', 'tok');
+    if (S.article) { S.article.published = true; S.article.publishedUrl = 'https://'+(S.settings.domain||'talentbuddy.xyz')+'/'+bp+'/'+slug; }
+    addHistory(S.article, true);
+    renderHistory();
+  } catch(e) {
+    addLog('Error: '+e.message, 'log-err');
+    toast('Publish failed: '+e.message, 'terr');
+  }
+  document.getElementById('btn-pub').disabled = false;
+}
+
+async function ghFetch(method, path, repo, branch, pat, body) {
+  var url = 'https://api.github.com/repos/'+repo+path;
+  var opts = {method:method,headers:{'Authorization':'Bearer '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}};
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+async function updateSitemap(repo, branch, bp, slug, addLog) {
+  addLog('Updating sitemap.xml...', 'log-info');
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  try {
+    var r = await ghFetch('GET','/contents/sitemap.xml',repo,branch,S.settings.github);
+    var sha = null, xml = '';
+    if (r.ok) { var d=await r.json(); xml=decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))); sha=d.sha; }
+    else xml='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>';
+    var today=new Date().toISOString().split('T')[0];
+    var entry='  <url>\n    <loc>https://'+domain+'/'+bp+'/'+slug+'</loc>\n    <lastmod>'+today+'</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>';
+    var updated = xml.includes(slug) ? xml : xml.replace('</urlset>',entry+'\n</urlset>');
+    var body2={message:'SEO: Update sitemap for '+slug,content:btoa(unescape(encodeURIComponent(updated))),branch:branch};
+    if (sha) body2.sha=sha;
+    await ghFetch('PUT','/contents/sitemap.xml',repo,branch,S.settings.github,body2);
+    addLog('sitemap.xml updated ✓', 'log-ok');
+  } catch(e) { addLog('Sitemap update failed: '+e.message, 'log-err'); }
+}
+
+async function updateBlogIndex(repo, branch, bp, slug, addLog) {
+  addLog('Updating '+bp+'/index.html...', 'log-info');
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var today = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  var readTime = Math.ceil((S.article.wordCount||1200)/220);
+  var tag = BUCKETS[S.article.topic.bucket]||S.article.topic.bucket;
+  var metaText = (document.getElementById('pub-meta').value||S.article.title).substring(0,140);
+  var newCard = '      <!-- ARTICLE: '+slug+' -->\n      <article class="blog-card fi" role="listitem">\n        <div class="blog-card-body">\n          <span class="blog-tag">'+esc(tag)+'</span>\n          <h2><a href="/'+bp+'/'+slug+'">'+esc(S.article.title)+'</a></h2>\n          <p>'+esc(metaText)+'</p>\n        </div>\n        <div class="blog-card-footer"><a href="/'+bp+'/'+slug+'" class="blog-read-more">Read Article <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="9 18 15 12 9 6"/></svg></a></div>\n      </article>';
+  try {
+    var r = await ghFetch('GET','/contents/'+bp+'/index.html',repo,branch,S.settings.github);
+    var sha=null, html='';
+    if (r.ok) { var d=await r.json(); html=decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))); sha=d.sha; }
+    else { html='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Blog | TalentBuddy</title><link rel="stylesheet" href="/assets/css/style.css"></head><body><main><section style="padding:60px 5%"><div class="si"><div class="blog-grid" role="list" id="blog-grid"></div></div></section></main></body></html>'; }
+    if (!html.includes('<!-- ARTICLE: '+slug)) {
+      html = html.replace('<div class="blog-grid" role="list"', newCard+'\n      <div class="blog-grid" role="list"');
+      if (html.indexOf(newCard) === -1) { html = html.replace('</main>', '<main><section style="padding:60px 5%"><div class="si">'+newCard+'</div></section></main>').replace('<main><main>','<main>'); }
+    }
+    var body2={message:'SEO: Add '+slug+' to blog index',content:btoa(unescape(encodeURIComponent(html))),branch:branch};
+    if (sha) body2.sha=sha;
+    await ghFetch('PUT','/contents/'+bp+'/index.html',repo,branch,S.settings.github,body2);
+    addLog(bp+'/index.html updated ✓', 'log-ok');
+  } catch(e) { addLog('Blog index update failed: '+e.message, 'log-err'); }
+}
+
+async function pingGoogle(slug, addLog) {
+  var domain = S.settings.domain || 'talentbuddy.xyz';
+  var bp = S.settings.blogpath || 'blog';
+  try { await fetch('https://www.google.com/ping?sitemap=https://'+domain+'/sitemap.xml',{mode:'no-cors'}); addLog('Google pinged ✓','log-ok'); }
+  catch(_) { addLog('Google ping skipped (CORS, normal)','log-info'); }
+}
+
+function schedulePublish() {
+  var dt = document.getElementById('pub-schedule').value;
+  if (!dt) { toast('Pick a date/time first', 'terr'); return; }
+  var target = new Date(dt).getTime(), now = Date.now();
+  if (target <= now) { toast('Schedule must be in the future', 'terr'); return; }
+  if (S.schedTimer) clearTimeout(S.schedTimer);
+  S.schedTimer = setTimeout(function(){publishNow();toast('Scheduled publish triggered','tok')}, target-now);
+  var fmt = new Date(dt).toLocaleString('en-IN');
+  toast('Scheduled for '+fmt, 'tok');
+  document.getElementById('pub-log').innerHTML = '<span class="log-info">Scheduled for '+esc(fmt)+'\n</span>';
+}
+
+// ── OPENAI ────────────────────────────────────────────────────────
+async function callOpenAI(messages, model, maxTokens) {
+  if (!S.settings.openai) throw new Error('No OpenAI API key');
+  var res = await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.settings.openai},
+    body:JSON.stringify({model:model||'gpt-4o',max_tokens:maxTokens||3500,temperature:0.7,messages:messages})
+  });
+  if (!res.ok) { var e=await res.json(); throw new Error(e.error&&e.error.message||'OpenAI error '+res.status); }
   return res.json();
 }
 
-/* ── HELPERS ── */
-function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
-function escAttr(s) { return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
-function delay(ms) { return new Promise(function(r){setTimeout(r,ms)}) }
-
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type||'');
-  setTimeout(function(){ t.classList.remove('show') }, 3500);
+// ── HISTORY ───────────────────────────────────────────────────────
+function loadHistory() {
+  var saved = localStorage.getItem('tb_history_v2');
+  if (saved) S.history = JSON.parse(saved);
 }
+
+function addHistory(article, published) {
+  if (!article) return;
+  var entry = {title:article.title,slug:article.slug,bucket:article.topic&&article.topic.bucket,wordCount:article.wordCount,generatedAt:article.generatedAt||new Date().toISOString(),published:published||article.published};
+  var idx = S.history.findIndex(function(h){return h.slug===article.slug});
+  if (idx>=0) S.history[idx]=entry; else S.history.unshift(entry);
+  localStorage.setItem('tb_history_v2', JSON.stringify(S.history.slice(0,50)));
+  renderHistory();
+}
+
+function renderHistory() {
+  var el = document.getElementById('history-list');
+  if (!S.history.length) { el.innerHTML = '<div class="empty"><div class="e-ico">📚</div>No articles yet</div>'; return; }
+  el.innerHTML = S.history.map(function(h){
+    return '<div class="hist-item"><div class="h-title">'+esc(h.title)+'</div>' +
+      '<div class="h-meta"><span>'+(h.wordCount||'?')+' w</span><span>'+esc(BUCKETS[h.bucket]||h.bucket||'')+'</span>' +
+      '<span class="'+(h.published?'h-pub':'')+'">'+(h.published?'✓ Published':'Draft')+'</span></div></div>';
+  }).join('');
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────────
+function showTab(t) {
+  ['write','audit','publish'].forEach(function(x){
+    document.getElementById('content-'+x).classList.remove('active');
+    document.getElementById('tab-'+x).classList.remove('active');
+  });
+  document.getElementById('content-'+t).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+function showPanel(p) {
+  ['settings','history'].forEach(function(x){
+    document.getElementById('panel-'+x).classList.remove('active');
+    document.getElementById('ptab-'+x).classList.remove('active');
+  });
+  document.getElementById('panel-'+p).classList.add('active');
+  document.getElementById('ptab-'+p).classList.add('active');
+}
+
+function setStatus(msg, loading) {
+  document.getElementById('gen-status-text').textContent = msg;
+  document.getElementById('gen-spinner').classList.toggle('on', loading);
+}
+
+function toast(msg, cls) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast '+(cls||'');
+  setTimeout(function(){el.classList.add('show')},10);
+  setTimeout(function(){el.classList.remove('show')},3500);
+}
+
+function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').substring(0,65); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 </script>
 </body>
 </html>
