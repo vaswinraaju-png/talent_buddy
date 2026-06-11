@@ -315,23 +315,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="ptab" onclick="showPanel('history')" id="ptab-history">📚 History</div>
   </div>
   <div class="panel-content active" id="panel-settings">
-    <div class="sg"><h4>API Keys</h4>
+    <div class="sg">
+      <h4>API Keys</h4>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:10px;line-height:1.5">Only these two are needed. Everything else is pre-configured for TalentBuddy.</p>
       <input type="password" class="si" id="s-openai" placeholder="OpenAI API Key (sk-...)">
       <input type="password" class="si" id="s-github" placeholder="GitHub PAT (ghp_...)">
     </div>
-    <div class="sg"><h4>GitHub Repo</h4>
-      <input type="text" class="si" id="s-repo" placeholder="username/repo">
-      <input type="text" class="si" id="s-branch" placeholder="Branch (main)">
-    </div>
-    <div class="sg"><h4>Blog Config</h4>
-      <input type="text" class="si" id="s-domain" placeholder="Domain (talentbuddy.xyz)">
-      <input type="text" class="si" id="s-blogpath" placeholder="Blog path (blog/)">
-      <input type="text" class="si" id="s-phone" placeholder="CTA Phone (+91 99802 91663)">
-    </div>
-    <div class="sg"><h4>System Prompt Override</h4>
-      <textarea class="sysprompt" id="s-sysprompt" placeholder="Custom generation instructions..."></textarea>
-    </div>
-    <button class="btn-save" onclick="saveSettings()">Save Settings</button>
+    <button class="btn-save" onclick="saveSettings()" style="margin-bottom:14px">Save &amp; Start &#8594;</button>
+    <details style="margin-top:2px">
+      <summary style="font-size:10px;color:var(--muted);cursor:pointer;padding:5px 0;user-select:none">&#9656; Advanced settings</summary>
+      <div style="margin-top:10px">
+        <div class="sg"><h4>GitHub Repo</h4>
+          <input type="text" class="si" id="s-repo" placeholder="username/repo">
+          <input type="text" class="si" id="s-branch" placeholder="Branch (main)">
+        </div>
+        <div class="sg"><h4>Blog Config</h4>
+          <input type="text" class="si" id="s-domain" placeholder="Domain (talentbuddy.xyz)">
+          <input type="text" class="si" id="s-blogpath" placeholder="Blog path (blog/)">
+          <input type="text" class="si" id="s-phone" placeholder="CTA Phone (+91 99802 91663)">
+        </div>
+        <div class="sg"><h4>System Prompt Override</h4>
+          <textarea class="sysprompt" id="s-sysprompt" placeholder="Custom generation instructions..."></textarea>
+        </div>
+      </div>
+    </details>
   </div>
   <div class="panel-content" id="panel-history">
     <div id="history-list"><div class="empty"><div class="e-ico">📚</div>No articles generated yet</div></div>
@@ -388,22 +395,24 @@ window.onload = function() {
   loadSettings();
   loadHistory();
   renderHistory();
+  updatePubPreview();
+  if (!S.topics.length) seedTopics();
 };
 
 // ── SETTINGS ──────────────────────────────────────────────────────
 function loadSettings() {
+  var defs = {openai:'',github:'',repo:'vaswinraaju-png/talent_buddy',branch:'main',domain:'talentbuddy.xyz',blogpath:'blog',phone:'+91 99802 91663',sysprompt:''};
   var saved = localStorage.getItem('tb_seo_v2');
-  if (saved) {
-    S.settings = JSON.parse(saved);
-    document.getElementById('s-openai').value = S.settings.openai || '';
-    document.getElementById('s-github').value = S.settings.github || '';
-    document.getElementById('s-repo').value = S.settings.repo || 'vaswinraaju-png/talent_buddy';
-    document.getElementById('s-branch').value = S.settings.branch || 'main';
-    document.getElementById('s-domain').value = S.settings.domain || 'talentbuddy.xyz';
-    document.getElementById('s-blogpath').value = S.settings.blogpath || 'blog';
-    document.getElementById('s-phone').value = S.settings.phone || '+91 99802 91663';
-    document.getElementById('s-sysprompt').value = S.settings.sysprompt || '';
-  }
+  S.settings = saved ? Object.assign({},defs,JSON.parse(saved)) : Object.assign({},defs);
+  document.getElementById('s-openai').value = S.settings.openai;
+  document.getElementById('s-github').value = S.settings.github;
+  document.getElementById('s-repo').value = S.settings.repo;
+  document.getElementById('s-branch').value = S.settings.branch;
+  document.getElementById('s-domain').value = S.settings.domain;
+  document.getElementById('s-blogpath').value = S.settings.blogpath;
+  document.getElementById('s-phone').value = S.settings.phone;
+  document.getElementById('s-sysprompt').value = S.settings.sysprompt;
+  if (!saved) localStorage.setItem('tb_seo_v2', JSON.stringify(S.settings));
 }
 
 function saveSettings() {
@@ -413,13 +422,14 @@ function saveSettings() {
     repo: document.getElementById('s-repo').value.trim() || 'vaswinraaju-png/talent_buddy',
     branch: document.getElementById('s-branch').value.trim() || 'main',
     domain: document.getElementById('s-domain').value.trim() || 'talentbuddy.xyz',
-    blogpath: document.getElementById('s-blogpath').value.trim().replace(/\/$/, '') || 'blog',
+    blogpath: (document.getElementById('s-blogpath').value.trim() || 'blog').replace(/\/+$/,''),
     phone: document.getElementById('s-phone').value.trim() || '+91 99802 91663',
     sysprompt: document.getElementById('s-sysprompt').value.trim()
   };
   localStorage.setItem('tb_seo_v2', JSON.stringify(S.settings));
-  toast('Settings saved ✓', 'tok');
+  toast('Saved! Topics ready to generate.', 'tok');
   updatePubPreview();
+  if (!S.topics.length) seedTopics();
 }
 
 // ── TOPICS ────────────────────────────────────────────────────────
